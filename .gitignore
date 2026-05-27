@@ -1,0 +1,38 @@
+# Dependencies
+node_modules/
+__pycache__/
+*.pyc
+.venv/
+env/
+
+# Environment
+.env
+.env.local
+.env.production
+
+# Build
+dist/
+build/
+*.egg-info/
+
+# IDE
+.vscode/
+.idea/
+*.swp
+*.swo
+.DS_Store
+
+# Data & Models (too large for git)
+ml-service/saved_models/*.keras
+ml-service/saved_models/saved_model/
+ml-service/data/raw/*.csv
+ml-service/data/processed/*.csv
+!ml-service/data/*/.gitkeep
+
+# Logs
+*.log
+logs/
+tensorboard_logs/
+
+# Streamlit
+ds-dashboard/.streamlit/secrets.toml

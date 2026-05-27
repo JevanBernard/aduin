@@ -1,0 +1,83 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model User {
+  id        String   @id @default(uuid())
+  email     String   @unique
+  password  String
+  name      String
+  role      Role     @default(ADMIN)
+  jabatan   String?
+  instansi  String?
+  phone     String?
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  statusHistories StatusHistory[]
+}
+
+model Report {
+  id            String   @id @default(uuid())
+  reportNumber  String   @unique  // ADN-YYYYMMDD-XXXX
+  text          String
+  reporterName  String?  // null = anonim
+  photoUrls     String[]
+
+  // Location
+  kabupatenKota String
+  kecamatan     String
+  detailLokasi  String?
+  latitude      Float?
+  longitude     Float?
+
+  // NLP Results (filled by ML service)
+  categories    String[]   // multi-label: ["infrastruktur", "lingkungan"]
+  sentiment     String?    // negatif, netral, positif
+  sentimentScore Float?
+  urgency       String?    // tinggi, sedang, rendah
+  urgencyScore  Float?
+  priorityScore Float?     // 0-100
+  clusterId     String?
+
+  // Status & Disposisi
+  status        ReportStatus @default(DITERIMA)
+  disposisiDinas String?
+  catatanAdmin  String?
+
+  source        String     @default("form_warga")
+  createdAt     DateTime   @default(now())
+  updatedAt     DateTime   @updatedAt
+
+  statusHistories StatusHistory[]
+}
+
+model StatusHistory {
+  id        String       @id @default(uuid())
+  reportId  String
+  report    Report       @relation(fields: [reportId], references: [id])
+  status    ReportStatus
+  note      String?
+  changedBy String?      // userId or "SYSTEM"
+  user      User?        @relation(fields: [changedBy], references: [id])
+  createdAt DateTime     @default(now())
+}
+
+enum Role {
+  SUPER_ADMIN
+  ADMIN
+  VIEWER
+}
+
+enum ReportStatus {
+  DITERIMA
+  DIANALISIS
+  DIDISPOSISI
+  DITINDAKLANJUTI
+  SELESAI
+}

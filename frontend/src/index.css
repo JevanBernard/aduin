@@ -1,0 +1,37 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+body {
+  font-family: "Raleway", sans-serif;
+  -webkit-font-smoothing: antialiased;
+}
+
+::-webkit-scrollbar { width: 6px; }
+::-webkit-scrollbar-track { background: transparent; }
+::-webkit-scrollbar-thumb { background: #cbd5e1; border-radius: 3px; }
+.dark ::-webkit-scrollbar-thumb { background: #334155; }
+
+/* Leaflet custom tooltip - hapus background default */
+.custom-tooltip {
+  background: transparent !important;
+  border: none !important;
+  box-shadow: none !important;
+  padding: 0 !important;
+}
+
+.custom-tooltip::before {
+  display: none !important;
+}
+
+/* Fix leaflet z-index agar filter/legend tetap di atas peta */
+.leaflet-top,
+.leaflet-bottom {
+  z-index: 999 !important;
+}
