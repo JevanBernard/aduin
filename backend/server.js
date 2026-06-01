@@ -9,6 +9,11 @@ const errorHandler = require("./src/middleware/errorHandler");
 const settingsRoutes = require("./src/routes/settingsRoutes");
 const wilayahRoutes = require("./src/routes/wilayahRoutes");
 
+const allowedOrigins = [
+  "http://localhost:5173",
+  "https://your-app.vercel.app", // ← update setelah deploy frontend
+];
+
 const app = express();
 const PORT = process.env.PORT || 3000;
 
@@ -30,3 +35,16 @@ app.listen(PORT, () => {
 });
 
 app.use("/api/wilayah", wilayahRoutes);
+
+
+
+app.use(cors({
+  origin: (origin, callback) => {
+    if (!origin || allowedOrigins.includes(origin)) {
+      callback(null, true);
+    } else {
+      callback(new Error("Not allowed by CORS"));
+    }
+  },
+  credentials: true,
+}));
