@@ -3,11 +3,12 @@
   "version": "1.0.0",
   "type": "commonjs",
   "scripts": {
-  "build": "npx prisma generate",
-  "start": "node server.js"
+    "build": "npx prisma generate",
+    "start": "node server.js"
   },
   "dependencies": {
     "@prisma/client": "5.22.0",
+    "prisma": "5.22.0",
     "bcryptjs": "^3.0.3",
     "cors": "^2.8.6",
     "dotenv": "^17.4.2",
@@ -17,7 +18,6 @@
   "devDependencies": {
     "@types/node": "^25.9.1",
     "nodemon": "^3.1.14",
-    "prisma": "5.22.0",
     "ts-node": "^10.9.2",
     "typescript": "^6.0.3"
   }
