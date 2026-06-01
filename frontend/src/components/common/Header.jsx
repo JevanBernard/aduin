@@ -2,6 +2,8 @@ import { useState, useRef, useEffect } from "react";
 import { useTheme } from "../../context/ThemeContext";
 import { PERIODS } from "../../data/dashboardData";
 import { ChevronDownIcon, SunIcon, MoonIcon, SearchIcon, MenuIcon, SettingsIcon } from "./Icons";
+import { useNavigate } from "react-router-dom";
+import { logout } from "../../hooks/useAuth";
 
 // ============ PERIOD DROPDOWN (UPDATED) ============
 export function PeriodDropdown({ selected, onChange }) {
@@ -11,6 +13,7 @@ export function PeriodDropdown({ selected, onChange }) {
   const [endDate, setEndDate] = useState("");
   const dropdownRef = useRef(null);
   const { dark } = useTheme();
+  const navigate = useNavigate();
 
   const PRESETS = [
     { label: "7 Hari Terakhir", value: "7d" },
@@ -266,15 +269,30 @@ export function ThemeToggle() {
 export function ProfileDropdown() {
   const [open, setOpen] = useState(false);
   const { dark } = useTheme();
+  const navigate = useNavigate();
+  const dropdownRef = useRef(null);
 
-  const menuItems = [
-    { label: "Profil Saya", icon: "👤" },
-    { label: "Pengaturan", icon: "⚙️" },
-    { label: "Bantuan", icon: "❓" },
-  ];
+  // Ambil data user dari localStorage
+  const user = (() => {
+    try { return JSON.parse(localStorage.getItem("aduin_user")); }
+    catch { return null; }
+  })();
+
+  const initials = user?.name
+    ? user.name.split(" ").map((n) => n[0]).join("").slice(0, 2).toUpperCase()
+    : "SA";
+
+  // Tutup kalau klik di luar
+  useEffect(() => {
+    const handle = (e) => {
+      if (dropdownRef.current && !dropdownRef.current.contains(e.target)) setOpen(false);
+    };
+    document.addEventListener("mousedown", handle);
+    return () => document.removeEventListener("mousedown", handle);
+  }, []);
 
   return (
-    <div className="relative">
+    <div className="relative" ref={dropdownRef}>
       <button
         onClick={() => setOpen(!open)}
         className="w-11 h-11 rounded-full overflow-hidden cursor-pointer flex items-center justify-center"
@@ -284,7 +302,7 @@ export function ProfileDropdown() {
         }}
         aria-label="Menu profil"
       >
-        <span className="text-white font-bold text-sm font-raleway">SA</span>
+        <span className="text-white font-bold text-sm font-raleway">{initials}</span>
       </button>
 
       {open && (
@@ -299,30 +317,42 @@ export function ProfileDropdown() {
           {/* User info */}
           <div className="p-4" style={{ borderBottom: `1px solid ${dark ? "#334155" : "#f1f5f9"}` }}>
             <p className="font-bold text-sm font-raleway" style={{ color: dark ? "#e2e8f0" : "#1e293b" }}>
-              Super Admin
+              {user?.name || "Super Admin"}
             </p>
             <p className="text-xs mt-0.5" style={{ color: dark ? "#64748b" : "#94a3b8" }}>
-              admin@aduin.go.id
+              {user?.email || "admin@aduin.go.id"}
             </p>
+            <span
+              className="inline-block mt-1.5 px-2 py-0.5 rounded text-[10px] font-bold font-raleway"
+              style={{ background: "rgba(62,139,243,0.15)", color: "#3e8bf3" }}
+            >
+              {user?.role === "SUPER_ADMIN" ? "Super Admin" : user?.role === "ADMIN" ? "Admin" : "Viewer"}
+            </span>
           </div>
 
           {/* Menu items */}
-          {menuItems.map((item, i) => (
-            <button
-              key={i}
-              className="flex items-center gap-2.5 w-full px-4 py-2.5 text-sm font-raleway font-medium text-left transition hover:opacity-80"
-              style={{
-                color: dark ? "#94a3b8" : "#475569",
-                background: "transparent",
-              }}
-            >
-              <span>{item.icon}</span> {item.label}
-            </button>
-          ))}
+          <button
+            onClick={() => { navigate("/settings"); setOpen(false); }}
+            className="flex items-center gap-2.5 w-full px-4 py-2.5 text-sm font-raleway font-medium text-left transition hover:opacity-80"
+            style={{ color: dark ? "#94a3b8" : "#475569" }}
+          >
+            <span>⚙️</span> Pengaturan
+          </button>
+
+          <button
+            onClick={() => { navigate("/laporan"); setOpen(false); }}
+            className="flex items-center gap-2.5 w-full px-4 py-2.5 text-sm font-raleway font-medium text-left transition hover:opacity-80"
+            style={{ color: dark ? "#94a3b8" : "#475569" }}
+          >
+            <span>📋</span> Kelola Laporan
+          </button>
 
           {/* Logout */}
           <div style={{ borderTop: `1px solid ${dark ? "#334155" : "#f1f5f9"}` }}>
-            <button className="flex items-center gap-2.5 w-full px-4 py-2.5 text-sm font-raleway font-semibold text-left text-red-500">
+            <button
+              onClick={() => { logout(navigate); setOpen(false); }}
+              className="flex items-center gap-2.5 w-full px-4 py-2.5 text-sm font-raleway font-semibold text-left text-red-500 transition hover:opacity-80"
+            >
               <span>🚪</span> Logout
             </button>
           </div>
@@ -335,12 +365,23 @@ export function ProfileDropdown() {
 // ============ SEARCH BAR ============
 export function SearchBar() {
   const { dark } = useTheme();
+  const navigate = useNavigate();
+  const [value, setValue] = useState("");
+
+  const handleSearch = (e) => {
+    e.preventDefault();
+    if (value.trim()) {
+      navigate(`/laporan?search=${encodeURIComponent(value.trim())}`);
+    }
+  };
 
   return (
-    <div className="relative w-full sm:w-72">
+    <form onSubmit={handleSearch} className="relative w-full sm:w-72">
       <SearchIcon className="w-5 h-5 absolute left-3.5 top-1/2 -translate-y-1/2 text-gray-500" />
       <input
         type="search"
+        value={value}
+        onChange={(e) => setValue(e.target.value)}
         placeholder="Cari Laporan, Lokasi...."
         className="w-full pl-11 pr-4 py-3 rounded-lg text-sm font-semibold font-raleway outline-none transition"
         style={{
@@ -349,7 +390,7 @@ export function SearchBar() {
         }}
         aria-label="Cari laporan atau lokasi"
       />
-    </div>
+    </form>
   );
 }
 

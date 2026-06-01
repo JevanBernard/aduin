@@ -1,9 +1,26 @@
+import { useState, useEffect } from "react";
 import { useTheme } from "../../context/ThemeContext";
-import { MONTHS } from "../../data/dashboardData";
+import { getTrendsBulanan } from "../../services/api";
 
-export default function TrendChart({ data }) {
+export default function TrendChart() {
   const { dark } = useTheme();
-  const max = Math.max(...data);
+  const [chartData, setChartData] = useState([]);
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    getTrendsBulanan()
+      .then((res) => {
+        if (res?.data) setChartData(res.data);
+      })
+      .catch(() => {
+        // Fallback mock 7 bulan
+        const months = ["Nov", "Des", "Jan", "Feb", "Mar", "Apr", "Mei"];
+        setChartData(months.map((label) => ({ label, count: 0 })));
+      })
+      .finally(() => setLoading(false));
+  }, []);
+
+  const max = Math.max(...chartData.map((d) => d.count), 1);
 
   return (
     <section
@@ -13,44 +30,42 @@ export default function TrendChart({ data }) {
         boxShadow: dark ? "0 2px 8px rgba(0,0,0,0.3)" : "0 4px 15px rgba(0,0,0,0.08)",
         border: dark ? "1px solid rgba(255,255,255,0.05)" : "2px solid #fff",
       }}
-      aria-label="Grafik tren laporan per bulan"
     >
-      <h2
-        className="text-xl font-bold text-center mb-3.5 font-raleway"
-        style={{ color: dark ? "#e2e8f0" : "#000" }}
-      >
+      <h2 className="text-xl font-bold text-center mb-3.5 font-raleway" style={{ color: dark ? "#e2e8f0" : "#000" }}>
         Tren Kategori
       </h2>
 
-      <div className="flex items-end gap-1.5 px-1" style={{ height: 140 }} role="img" aria-label="Grafik batang tren bulanan">
-        {data.map((val, i) => {
-          const h = max > 0 ? (val / max) * 100 : 0;
-          const isMax = val === max;
+      {loading ? (
+        <div className="flex items-center justify-center" style={{ height: 140 }}>
+          <div className="w-3 h-3 rounded-full bg-blue-500 animate-pulse" />
+        </div>
+      ) : (
+        <div className="flex items-end gap-1.5 px-1" style={{ height: 140 }}>
+          {chartData.map((item, i) => {
+            const h = max > 0 ? (item.count / max) * 100 : 0;
+            const isMax = item.count === max && item.count > 0;
 
-          return (
-            <div key={i} className="flex-1 flex flex-col items-center gap-1.5">
-              <div className="w-full flex items-end" style={{ height: 110 }}>
-                <div
-                  className="w-full rounded transition-all duration-500 ease-out"
-                  style={{
-                    height: `${h}%`,
-                    borderRadius: 4,
-                    background: isMax ? "#e8a020" : dark ? "#2563eb" : "#9cc6ff",
-                    minHeight: val > 0 ? 4 : 0,
-                  }}
-                  title={`${MONTHS[i]}: ${val} laporan`}
-                />
+            return (
+              <div key={i} className="flex-1 flex flex-col items-center gap-1.5">
+                <div className="w-full flex items-end" style={{ height: 110 }}>
+                  <div
+                    className="w-full rounded transition-all duration-500 ease-out"
+                    style={{
+                      height: `${h}%`,
+                      background: isMax ? "#e8a020" : dark ? "#2563eb" : "#9cc6ff",
+                      minHeight: item.count > 0 ? 4 : 0,
+                    }}
+                    title={`${item.label}: ${item.count} laporan`}
+                  />
+                </div>
+                <span className="text-xs font-bold font-inter" style={{ color: dark ? "rgba(255,255,255,0.35)" : "rgba(0,0,0,0.5)" }}>
+                  {item.label}
+                </span>
               </div>
-              <span
-                className="text-xs font-bold font-inter"
-                style={{ color: dark ? "rgba(255,255,255,0.35)" : "rgba(0,0,0,0.5)" }}
-              >
-                {MONTHS[i]}
-              </span>
-            </div>
-          );
-        })}
-      </div>
+            );
+          })}
+        </div>
+      )}
     </section>
   );
 }

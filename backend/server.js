@@ -2,33 +2,31 @@ const express = require("express");
 const cors = require("cors");
 require("dotenv").config();
 
+const authRoutes = require("./src/routes/authRoutes");
 const reportRoutes = require("./src/routes/reportRoutes");
 const dashboardRoutes = require("./src/routes/dashboardRoutes");
-const authRoutes = require("./src/routes/authRoutes");
-const mlRoutes = require("./src/routes/mlRoutes");
 const errorHandler = require("./src/middleware/errorHandler");
+const settingsRoutes = require("./src/routes/settingsRoutes");
+const wilayahRoutes = require("./src/routes/wilayahRoutes");
 
 const app = express();
 const PORT = process.env.PORT || 3000;
 
-// Middleware
-app.use(cors());
+app.use(cors({ origin: "http://localhost:5173", credentials: true }));
 app.use(express.json());
 
-// Routes
+app.use("/api/auth", authRoutes);
 app.use("/api/reports", reportRoutes);
 app.use("/api/dashboard", dashboardRoutes);
-app.use("/api/auth", authRoutes);
-app.use("/api/ml", mlRoutes);
-
-// Health check
+app.use("/api/settings", settingsRoutes);
 app.get("/api/health", (req, res) => {
-  res.json({ status: "ok", service: "ADUIN Backend", timestamp: new Date() });
+  res.json({ status: "ok", service: "ADUIN Backend" });
 });
 
-// Error handler
 app.use(errorHandler);
 
 app.listen(PORT, () => {
   console.log(`ADUIN Backend running on port ${PORT}`);
 });
+
+app.use("/api/wilayah", wilayahRoutes);

@@ -1,10 +1,10 @@
-import { useState, useEffect } from "react";
 import { useTheme } from "../context/ThemeContext";
 import Sidebar from "../components/common/Sidebar";
 import HeatmapMap from "../components/admin/HeatmapMap";
 import HeatmapPanel from "../components/admin/HeatmapPanel";
 import useHeatmap from "../hooks/useHeatmap";
 import { PeriodDropdown } from "../components/common/Header";
+import { useState, useEffect, useRef } from "react";
 
 export default function PetaPage() {
   const { dark } = useTheme();
@@ -13,6 +13,8 @@ export default function PetaPage() {
   const [filterKat, setFilterKat] = useState("Semua");
   const [filterUrg, setFilterUrg] = useState("Semua");
   const [period, setPeriod] = useState({ type: "preset", value: "7d" });
+  const [exportMenu, setExportMenu] = useState(false);
+  const exportMenuRef = useRef(null);
 
   // Untuk dikirim ke useHeatmap, convert jadi string query
   const getPeriodQuery = () => {
@@ -51,10 +53,52 @@ export default function PetaPage() {
   });
 
   useEffect(() => {
-    const h = () => { if (window.innerWidth >= 1024) setSidebarOpen(false); };
-    window.addEventListener("resize", h);
-    return () => window.removeEventListener("resize", h);
+    const handle = (e) => {
+      if (exportMenuRef.current && !exportMenuRef.current.contains(e.target)) setExportMenu(false);
+    };
+    document.addEventListener("mousedown", handle);
+    return () => document.removeEventListener("mousedown", handle);
   }, []);
+
+  const handleExportCSV = () => {
+    const header = "Kabupaten/Kota,Total Laporan,Urgent,Persentase Urgent";
+    const rows = wilayahList.map((w) =>
+      `"${w.name}",${w.count},${w.urgent},${w.count > 0 ? Math.round((w.urgent / w.count) * 100) : 0}%`
+    );
+    const csv = [header, ...rows].join("\n");
+    const blob = new Blob([csv], { type: "text/csv;charset=utf-8;" });
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement("a");
+    a.href = url;
+    a.download = `ADUIN_Peta_${new Date().toISOString().slice(0, 10)}.csv`;
+    a.click();
+    URL.revokeObjectURL(url);
+    setExportMenu(false);
+  };
+
+  const handleExportJSON = () => {
+    const data = {
+      exported_at: new Date().toISOString(),
+      period: period.type === "preset" ? period.value : `${period.start} - ${period.end}`,
+      summary,
+      wilayah: wilayahList.map((w) => ({
+        nama: w.name,
+        total: w.count,
+        urgent: w.urgent,
+        latitude: w.lat,
+        longitude: w.lng,
+        top_categories: w.topCategories,
+      })),
+    };
+    const blob = new Blob([JSON.stringify(data, null, 2)], { type: "application/json" });
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement("a");
+    a.href = url;
+    a.download = `ADUIN_Peta_${new Date().toISOString().slice(0, 10)}.json`;
+    a.click();
+    URL.revokeObjectURL(url);
+    setExportMenu(false);
+  };
 
   return (
     <div
@@ -94,16 +138,49 @@ export default function PetaPage() {
             {/* Period selector */}
             {/* Period selector - pakai PeriodDropdown yang sama dengan dashboard */}
                 <PeriodDropdown selected={period} onChange={(val) => { setPeriod(val); handleClose(); }} />
-            <button
-              className="px-3 py-1.5 rounded-md text-xs font-semibold font-raleway"
-              style={{
-                border: `1px solid ${dark ? "#334155" : "#e2e8f0"}`,
-                color: dark ? "#94a3b8" : "#64748b",
-                background: dark ? "#1e293b" : "#fff",
-              }}
-            >
-              Export ↓
-            </button>
+            <div className="relative" ref={exportMenuRef}>
+              <button
+                onClick={() => setExportMenu(!exportMenu)}
+                className="px-3 py-1.5 rounded-md text-xs font-semibold font-raleway transition hover:opacity-80"
+                style={{
+                  border: `1px solid ${dark ? "#334155" : "#e2e8f0"}`,
+                  color: dark ? "#94a3b8" : "#64748b",
+                  background: dark ? "#1e293b" : "#fff",
+                }}
+              >
+                Export ↓
+              </button>
+
+              {exportMenu && (
+                <div
+                  className="absolute top-full right-0 mt-1 rounded-lg overflow-hidden z-50"
+                  style={{
+                    background: dark ? "#1e293b" : "#fff",
+                    border: `1px solid ${dark ? "#334155" : "#e2e8f0"}`,
+                    boxShadow: "0 8px 24px rgba(0,0,0,0.12)",
+                    minWidth: 180,
+                  }}
+                >
+                  <button
+                    onClick={handleExportCSV}
+                    className="flex items-center gap-3 w-full px-4 py-3 text-xs font-raleway font-semibold text-left transition hover:opacity-80"
+                    style={{ color: dark ? "#e2e8f0" : "#333" }}
+                  >
+                    <span style={{ color: "#1d6f42" }}>📊</span> Export CSV
+                  </button>
+                  <button
+                    onClick={handleExportJSON}
+                    className="flex items-center gap-3 w-full px-4 py-3 text-xs font-raleway font-semibold text-left transition hover:opacity-80"
+                    style={{
+                      color: dark ? "#e2e8f0" : "#333",
+                      borderTop: `1px solid ${dark ? "#334155" : "#f1f5f9"}`,
+                    }}
+                  >
+                    <span style={{ color: "#3e8bf3" }}>📄</span> Export JSON
+                  </button>
+                </div>
+              )}
+            </div>
           </div>
         </header>
 

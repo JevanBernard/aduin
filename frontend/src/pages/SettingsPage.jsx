@@ -2,11 +2,16 @@ import { useState, useEffect } from "react";
 import { useTheme } from "../context/ThemeContext";
 import Sidebar from "../components/common/Sidebar";
 import { PeriodDropdown, ThemeToggle, ProfileDropdown } from "../components/common/Header";
+import { getKategoriSettings, updateKategoriSettings } from "../services/api";
+import { resetSettingsCache } from "../hooks/useSettings";
+import { getDinasSettings, updateDinasSettings } from "../services/api";
+
 
 const TABS = [
   { key: "umum", label: "Umum" },
   { key: "kategori", label: "Kategori Laporan" },
   { key: "dinas", label: "Daftar Dinas" },
+  { key: "wilayah", label: "Wilayah & Koordinat" }, // ← tambah ini
   { key: "notifikasi", label: "Notifikasi" },
   { key: "backup", label: "Data & Backup" },
 ];
@@ -145,6 +150,10 @@ export default function SettingsPage() {
                 <KategoriTab dark={dark} textPrimary={textPrimary} textSecondary={textSecondary} inputBg={inputBg} inputBorder={inputBorder} />
               )}
 
+              {activeTab === "wilayah" && (
+                <WilayahTab dark={dark} textPrimary={textPrimary} textSecondary={textSecondary} inputBg={inputBg} inputBorder={inputBorder} />
+              )}
+
               {/* === TAB: DAFTAR DINAS === */}
               {activeTab === "dinas" && (
                 <DinasTab dark={dark} textPrimary={textPrimary} textSecondary={textSecondary} inputBg={inputBg} inputBorder={inputBorder} />
@@ -278,12 +287,22 @@ function ActionButtons({ saving, onSave, onReset, dark }) {
 }
 
 function KategoriTab({ dark, textPrimary, textSecondary, inputBg, inputBorder }) {
-  const [kategoriList, setKategoriList] = useState([
-    "Infrastruktur", "Lingkungan", "Air & Sanitasi", "Bencana",
-    "Transportasi", "Pelayanan Publik", "Ekonomi", "Keamanan",
-    "Pendidikan", "Kesehatan",
-  ]);
+  const [kategoriList, setKategoriList] = useState([]);
   const [newKategori, setNewKategori] = useState("");
+  const [saving, setSaving] = useState(false);
+
+  // Fetch dari API saat load
+  useEffect(() => {
+    getKategoriSettings().then((res) => {
+      if (res?.data) setKategoriList(res.data);
+    }).catch(() => {
+      setKategoriList([
+        "Infrastruktur", "Lingkungan", "Air & Sanitasi", "Bencana",
+        "Transportasi", "Pelayanan Publik", "Ekonomi", "Keamanan",
+        "Pendidikan", "Kesehatan",
+      ]);
+    });
+  }, []);
 
   const handleAdd = () => {
     if (newKategori.trim() && !kategoriList.includes(newKategori.trim())) {
@@ -298,12 +317,24 @@ function KategoriTab({ dark, textPrimary, textSecondary, inputBg, inputBorder })
     }
   };
 
+  const handleSave = async () => {
+    setSaving(true);
+    try {
+      await updateKategoriSettings(kategoriList);
+      resetSettingsCache();
+      alert("Kategori berhasil disimpan!");
+    } catch {
+      alert("Gagal menyimpan kategori");
+    } finally {
+      setSaving(false);
+    }
+  };
+
   return (
     <>
       <h2 className="text-xl font-bold font-raleway mb-1" style={{ color: textPrimary }}>Kategori Laporan</h2>
       <p className="text-sm font-raleway mb-6" style={{ color: textSecondary }}>Kelola kategori untuk klasifikasi laporan</p>
 
-      {/* Add new */}
       <div className="flex gap-2 mb-5 max-w-xl">
         <input
           value={newKategori}
@@ -318,8 +349,7 @@ function KategoriTab({ dark, textPrimary, textSecondary, inputBg, inputBorder })
         </button>
       </div>
 
-      {/* List */}
-      <div className="flex flex-col gap-2 max-w-xl">
+      <div className="flex flex-col gap-2 max-w-xl mb-6">
         {kategoriList.map((kat, i) => (
           <div key={i} className="flex items-center justify-between px-4 py-3 rounded-xl" style={{ background: dark ? "#0f172a" : "#f8fafc", border: `1px solid ${inputBorder}` }}>
             <span className="text-sm font-semibold font-raleway" style={{ color: textPrimary }}>{kat}</span>
@@ -327,23 +357,42 @@ function KategoriTab({ dark, textPrimary, textSecondary, inputBg, inputBorder })
           </div>
         ))}
       </div>
+
+      <button
+        onClick={handleSave}
+        disabled={saving}
+        className="px-6 py-2.5 rounded-lg text-sm font-bold font-raleway text-white transition hover:opacity-90 disabled:opacity-50"
+        style={{ background: "#3e8bf3" }}
+      >
+        {saving ? "Menyimpan..." : "Simpan Perubahan"}
+      </button>
     </>
   );
 }
 
 function DinasTab({ dark, textPrimary, textSecondary, inputBg, inputBorder }) {
-  const [dinasList, setDinasList] = useState([
-    { nama: "Dinas Pekerjaan Umum", singkatan: "PUPR" },
-    { nama: "Dinas Lingkungan Hidup", singkatan: "DLH" },
-    { nama: "PDAM", singkatan: "PDAM" },
-    { nama: "BPBD", singkatan: "BPBD" },
-    { nama: "Dinas Perhubungan", singkatan: "Dishub" },
-    { nama: "Dinas Kesehatan", singkatan: "Dinkes" },
-    { nama: "Dinas Pendidikan", singkatan: "Disdik" },
-    { nama: "Dinas Sosial", singkatan: "Dinsos" },
-  ]);
+  const [dinasList, setDinasList] = useState([]);
   const [newNama, setNewNama] = useState("");
   const [newSingkatan, setNewSingkatan] = useState("");
+  const [saving, setSaving] = useState(false);
+
+  // Fetch dari API saat load
+  useEffect(() => {
+    getDinasSettings().then((res) => {
+      if (res?.data) setDinasList(res.data);
+    }).catch(() => {
+      setDinasList([
+        { nama: "Dinas Pekerjaan Umum", singkatan: "PUPR" },
+        { nama: "Dinas Lingkungan Hidup", singkatan: "DLH" },
+        { nama: "PDAM", singkatan: "PDAM" },
+        { nama: "BPBD", singkatan: "BPBD" },
+        { nama: "Dinas Perhubungan", singkatan: "Dishub" },
+        { nama: "Dinas Kesehatan", singkatan: "Dinkes" },
+        { nama: "Dinas Pendidikan", singkatan: "Disdik" },
+        { nama: "Dinas Sosial", singkatan: "Dinsos" },
+      ]);
+    });
+  }, []);
 
   const handleAdd = () => {
     if (newNama.trim()) {
@@ -359,22 +408,40 @@ function DinasTab({ dark, textPrimary, textSecondary, inputBg, inputBorder }) {
     }
   };
 
+  const handleSave = async () => {
+    setSaving(true);
+    try {
+      await updateDinasSettings(dinasList);
+      resetSettingsCache();
+      alert("Daftar dinas berhasil disimpan!");
+    } catch {
+      alert("Gagal menyimpan daftar dinas");
+    } finally {
+      setSaving(false);
+    }
+  };
+
   return (
     <>
       <h2 className="text-xl font-bold font-raleway mb-1" style={{ color: textPrimary }}>Daftar Dinas</h2>
       <p className="text-sm font-raleway mb-6" style={{ color: textSecondary }}>Kelola daftar dinas untuk disposisi laporan</p>
 
-      {/* Add new */}
       <div className="flex gap-2 mb-5 max-w-xl">
-        <input value={newNama} onChange={(e) => setNewNama(e.target.value)} placeholder="Nama dinas..." className="flex-1 px-4 py-2.5 rounded-lg text-sm font-raleway outline-none" style={{ background: inputBg, border: `1.5px solid ${inputBorder}`, color: textPrimary }} />
-        <input value={newSingkatan} onChange={(e) => setNewSingkatan(e.target.value)} placeholder="Singkatan" className="w-28 px-4 py-2.5 rounded-lg text-sm font-raleway outline-none" style={{ background: inputBg, border: `1.5px solid ${inputBorder}`, color: textPrimary }} />
-        <button onClick={handleAdd} className="px-5 py-2.5 rounded-lg text-sm font-bold font-raleway text-white" style={{ background: "#3e8bf3" }}>Tambah</button>
+        <input value={newNama} onChange={(e) => setNewNama(e.target.value)} placeholder="Nama dinas..."
+          className="flex-1 px-4 py-2.5 rounded-lg text-sm font-raleway outline-none"
+          style={{ background: inputBg, border: `1.5px solid ${inputBorder}`, color: textPrimary }} />
+        <input value={newSingkatan} onChange={(e) => setNewSingkatan(e.target.value)} placeholder="Singkatan"
+          className="w-28 px-4 py-2.5 rounded-lg text-sm font-raleway outline-none"
+          style={{ background: inputBg, border: `1.5px solid ${inputBorder}`, color: textPrimary }} />
+        <button onClick={handleAdd} className="px-5 py-2.5 rounded-lg text-sm font-bold font-raleway text-white" style={{ background: "#3e8bf3" }}>
+          Tambah
+        </button>
       </div>
 
-      {/* List */}
-      <div className="flex flex-col gap-2 max-w-xl">
+      <div className="flex flex-col gap-2 max-w-xl mb-6">
         {dinasList.map((dinas, i) => (
-          <div key={i} className="flex items-center justify-between px-4 py-3 rounded-xl" style={{ background: dark ? "#0f172a" : "#f8fafc", border: `1px solid ${inputBorder}` }}>
+          <div key={i} className="flex items-center justify-between px-4 py-3 rounded-xl"
+            style={{ background: dark ? "#0f172a" : "#f8fafc", border: `1px solid ${inputBorder}` }}>
             <div>
               <span className="text-sm font-semibold font-raleway" style={{ color: textPrimary }}>{dinas.nama}</span>
               <span className="text-xs font-raleway ml-2" style={{ color: textSecondary }}>({dinas.singkatan})</span>
@@ -383,6 +450,207 @@ function DinasTab({ dark, textPrimary, textSecondary, inputBg, inputBorder }) {
           </div>
         ))}
       </div>
+
+      <button
+        onClick={handleSave}
+        disabled={saving}
+        className="px-6 py-2.5 rounded-lg text-sm font-bold font-raleway text-white transition hover:opacity-90 disabled:opacity-50"
+        style={{ background: "#3e8bf3" }}
+      >
+        {saving ? "Menyimpan..." : "Simpan Perubahan"}
+      </button>
     </>
+  );
+}
+
+function WilayahTab({ dark, textPrimary, textSecondary, inputBg, inputBorder }) {
+  const [wilayahList, setWilayahList] = useState([]);
+  const [newNama, setNewNama] = useState("");
+  const [newLat, setNewLat] = useState("");
+  const [newLng, setNewLng] = useState("");
+  const [newKecamatan, setNewKecamatan] = useState("");
+  const [saving, setSaving] = useState(false);
+  const [expandedId, setExpandedId] = useState(null); // untuk expand kecamatan
+
+  const getToken = () => JSON.parse(localStorage.getItem("aduin_user"))?.token;
+
+  useEffect(() => {
+    fetch("http://localhost:3000/api/wilayah", {
+      headers: { Authorization: `Bearer ${getToken()}` }
+    }).then(r => r.json()).then(res => { if (res.data) setWilayahList(res.data); });
+  }, []);
+
+  const handleAdd = async () => {
+    if (!newNama.trim() || !newLat || !newLng) return alert("Nama, latitude, longitude wajib diisi");
+    setSaving(true);
+    try {
+      const kecamatanArr = newKecamatan
+        .split(",")
+        .map(k => k.trim())
+        .filter(Boolean);
+
+      const res = await fetch("http://localhost:3000/api/wilayah", {
+        method: "POST",
+        headers: { "Content-Type": "application/json", Authorization: `Bearer ${getToken()}` },
+        body: JSON.stringify({ nama: newNama, latitude: newLat, longitude: newLng, kecamatan: kecamatanArr }),
+      });
+      const data = await res.json();
+      if (data.success) {
+        setWilayahList([...wilayahList, data.data]);
+        setNewNama(""); setNewLat(""); setNewLng(""); setNewKecamatan("");
+      }
+    } finally { setSaving(false); }
+  };
+
+  const handleDelete = async (id) => {
+    if (!window.confirm("Hapus wilayah ini?")) return;
+    await fetch(`http://localhost:3000/api/wilayah/${id}`, {
+      method: "DELETE",
+      headers: { Authorization: `Bearer ${getToken()}` }
+    });
+    setWilayahList(wilayahList.filter(w => w.id !== id));
+  };
+
+  const handleAddKecamatan = async (wilayah, kecBaru) => {
+    if (!kecBaru.trim()) return;
+    const updated = [...(wilayah.kecamatan || []), kecBaru.trim()];
+    await fetch(`http://localhost:3000/api/wilayah/${wilayah.id}`, {
+      method: "PUT",
+      headers: { "Content-Type": "application/json", Authorization: `Bearer ${getToken()}` },
+      body: JSON.stringify({ nama: wilayah.nama, latitude: wilayah.latitude, longitude: wilayah.longitude, kecamatan: updated }),
+    });
+    setWilayahList(wilayahList.map(w => w.id === wilayah.id ? { ...w, kecamatan: updated } : w));
+  };
+
+  const handleDeleteKecamatan = async (wilayah, kecIdx) => {
+    const updated = wilayah.kecamatan.filter((_, i) => i !== kecIdx);
+    await fetch(`http://localhost:3000/api/wilayah/${wilayah.id}`, {
+      method: "PUT",
+      headers: { "Content-Type": "application/json", Authorization: `Bearer ${getToken()}` },
+      body: JSON.stringify({ nama: wilayah.nama, latitude: wilayah.latitude, longitude: wilayah.longitude, kecamatan: updated }),
+    });
+    setWilayahList(wilayahList.map(w => w.id === wilayah.id ? { ...w, kecamatan: updated } : w));
+  };
+
+  return (
+    <>
+      <h2 className="text-xl font-bold font-raleway mb-1" style={{ color: textPrimary }}>Wilayah & Koordinat</h2>
+      <p className="text-sm font-raleway mb-6" style={{ color: textSecondary }}>
+        Koordinat untuk heatmap. Kecamatan untuk dropdown form warga.
+      </p>
+
+      {/* Form tambah wilayah baru */}
+      <div className="rounded-xl p-4 mb-6 max-w-2xl" style={{ background: dark ? "#0f172a" : "#f8fafc", border: `1px solid ${inputBorder}` }}>
+        <p className="text-sm font-bold font-raleway mb-3" style={{ color: textPrimary }}>Tambah Wilayah Baru</p>
+        <div className="flex gap-2 flex-wrap mb-2">
+          <input value={newNama} onChange={(e) => setNewNama(e.target.value)} placeholder="Nama wilayah"
+            className="flex-1 min-w-32 px-3 py-2 rounded-lg text-sm font-raleway outline-none"
+            style={{ background: inputBg, border: `1.5px solid ${inputBorder}`, color: textPrimary }} />
+          <input value={newLat} onChange={(e) => setNewLat(e.target.value)} placeholder="Latitude" type="number" step="0.0001"
+            className="w-28 px-3 py-2 rounded-lg text-sm font-raleway outline-none"
+            style={{ background: inputBg, border: `1.5px solid ${inputBorder}`, color: textPrimary }} />
+          <input value={newLng} onChange={(e) => setNewLng(e.target.value)} placeholder="Longitude" type="number" step="0.0001"
+            className="w-28 px-3 py-2 rounded-lg text-sm font-raleway outline-none"
+            style={{ background: inputBg, border: `1.5px solid ${inputBorder}`, color: textPrimary }} />
+        </div>
+        <div className="flex gap-2 mb-1">
+          <input value={newKecamatan} onChange={(e) => setNewKecamatan(e.target.value)}
+            placeholder="Kecamatan (pisahkan dengan koma: Kec A, Kec B, Kec C)"
+            className="flex-1 px-3 py-2 rounded-lg text-sm font-raleway outline-none"
+            style={{ background: inputBg, border: `1.5px solid ${inputBorder}`, color: textPrimary }} />
+          <button onClick={handleAdd} disabled={saving}
+            className="px-5 py-2 rounded-lg text-sm font-bold font-raleway text-white"
+            style={{ background: "#3e8bf3" }}>
+            {saving ? "..." : "Tambah"}
+          </button>
+        </div>
+        <p className="text-xs font-raleway" style={{ color: textSecondary }}>
+          Koordinat: cari di Google Maps → klik lokasi → salin lat,lng dari URL
+        </p>
+      </div>
+
+      {/* List wilayah */}
+      <div className="flex flex-col gap-3 max-w-2xl">
+        {wilayahList.map((w) => (
+          <div key={w.id} className="rounded-xl overflow-hidden" style={{ border: `1px solid ${inputBorder}` }}>
+
+            {/* Header wilayah */}
+            <div className="flex items-center justify-between px-4 py-3"
+              style={{ background: dark ? "#0f172a" : "#f8fafc" }}>
+              <div>
+                <span className="text-sm font-bold font-raleway" style={{ color: textPrimary }}>{w.nama}</span>
+                <span className="text-xs font-raleway ml-3" style={{ color: textSecondary }}>
+                  {w.latitude}, {w.longitude}
+                </span>
+                <span className="text-xs font-raleway ml-2" style={{ color: textSecondary }}>
+                  · {w.kecamatan?.length || 0} kecamatan
+                </span>
+              </div>
+              <div className="flex items-center gap-3">
+                <button
+                  onClick={() => setExpandedId(expandedId === w.id ? null : w.id)}
+                  className="text-xs font-bold font-raleway"
+                  style={{ color: "#3e8bf3" }}
+                >
+                  {expandedId === w.id ? "Tutup" : "Edit Kecamatan"}
+                </button>
+                <button onClick={() => handleDelete(w.id)} className="text-xs font-raleway text-red-500 hover:text-red-700">
+                  Hapus
+                </button>
+              </div>
+            </div>
+
+            {/* Expand kecamatan */}
+            {expandedId === w.id && (
+              <div className="px-4 py-3" style={{ background: dark ? "#1e293b" : "#fff", borderTop: `1px solid ${inputBorder}` }}>
+                {/* List kecamatan */}
+                <div className="flex flex-wrap gap-2 mb-3">
+                  {(w.kecamatan || []).map((kec, i) => (
+                    <div key={i} className="flex items-center gap-1 px-2.5 py-1 rounded-lg text-xs font-raleway"
+                      style={{ background: dark ? "#0f172a" : "#f1f5f9", color: textPrimary }}>
+                      {kec}
+                      <button onClick={() => handleDeleteKecamatan(w, i)} className="ml-1 text-red-400 hover:text-red-600 font-bold">×</button>
+                    </div>
+                  ))}
+                  {(w.kecamatan || []).length === 0 && (
+                    <p className="text-xs font-raleway italic" style={{ color: textSecondary }}>Belum ada kecamatan</p>
+                  )}
+                </div>
+
+                {/* Tambah kecamatan */}
+                <AddKecamatanInline
+                  onAdd={(kec) => handleAddKecamatan(w, kec)}
+                  dark={dark} inputBg={inputBg} inputBorder={inputBorder} textPrimary={textPrimary}
+                />
+              </div>
+            )}
+          </div>
+        ))}
+      </div>
+    </>
+  );
+}
+
+// Komponen kecil untuk input kecamatan baru
+function AddKecamatanInline({ onAdd, dark, inputBg, inputBorder, textPrimary }) {
+  const [value, setValue] = useState("");
+  return (
+    <div className="flex gap-2">
+      <input
+        value={value}
+        onChange={(e) => setValue(e.target.value)}
+        onKeyDown={(e) => { if (e.key === "Enter") { onAdd(value); setValue(""); } }}
+        placeholder="Tambah kecamatan..."
+        className="flex-1 px-3 py-1.5 rounded-lg text-xs font-raleway outline-none"
+        style={{ background: inputBg, border: `1.5px solid ${inputBorder}`, color: textPrimary }}
+      />
+      <button
+        onClick={() => { onAdd(value); setValue(""); }}
+        className="px-3 py-1.5 rounded-lg text-xs font-bold font-raleway text-white"
+        style={{ background: "#3e8bf3" }}
+      >
+        + Tambah
+      </button>
+    </div>
   );
 }

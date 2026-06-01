@@ -1,257 +1,263 @@
 import React, { useState } from 'react';
-import { MOCK_DETAIL } from '../../data/detailData'; 
+import { Link } from 'react-router-dom';
+import { trackReport } from '../../services/api';
 
-export default function CekStatus() {
-    const [keyword, setKeyword] = useState('');
-    const [laporanDitemukan, setLaporanDitemukan] = useState(null);
-    const [hasSearched, setHasSearched] = useState(false);
+export default function CekStatusWarga() {
+  const [keyword, setKeyword] = useState('');
+  const [laporanDitemukan, setLaporanDitemukan] = useState(null);
+  const [hasSearched, setHasSearched] = useState(false);
+  const [loading, setLoading] = useState(false);
 
-    // Fungsi Cari Laporan
-    const handleSearch = (e, targetCode) => {
-        if (e) e.preventDefault();
-        const codeToSearch = (targetCode || keyword).trim();
-        
-        if (!codeToSearch) return;
+  const handleSearch = async (e) => {
+    if (e) e.preventDefault();
+    if (!keyword.trim()) return;
 
-        let hasil = MOCK_DETAIL[codeToSearch];
-        
-        if (!hasil) {
-            hasil = Object.values(MOCK_DETAIL).find(item => item.id === codeToSearch);
-        }
+    setLoading(true);
+    setHasSearched(true);
 
-        setLaporanDitemukan(hasil || null);
-        setHasSearched(true);
-        if (targetCode) setKeyword(targetCode);
-    };
+    try {
+      const res = await trackReport(keyword.trim());
+      const r = res.data;
 
-    return (
-        <div className="bg-aduin-bg min-h-screen font-inter text-aduin-navy selection:bg-aduin-blue/20 pb-16">
-        
-        {/* FORM PENCARIAN */}
-        <section className="container mx-auto pt-12 px-4 max-w-4xl text-center">
-            <h1 className="text-3xl md:text-4xl font-raleway font-bold tracking-tight text-aduin-navy mb-2">Lacak Pengaduan Anda</h1>
-            <p className="text-gray-500 text-sm md:text-base mb-8 max-w-2xl mx-auto font-raleway font-bold">
-                Pantau status laporan Anda secara real-time. Masukkan kode unik pengaduan Anda.
-            </p>
+      setLaporanDitemukan({
+        id: r.reportNumber,
+        text: r.text,
+        status: r.status === "DITERIMA" || r.status === "DIANALISIS" ? "Belum"
+          : r.status === "SELESAI" ? "Selesai"
+          : "Proses",
+        disposisi: r.disposisiDinas || null,
+        catatan: r.catatanAdmin || null,
+        photos: r.photoUrls?.length > 0 ? r.photoUrls : [null],
+        pelapor: {
+          tanggal: new Date(r.createdAt).toLocaleDateString("id-ID", {
+            day: "numeric", month: "long", year: "numeric",
+            hour: "2-digit", minute: "2-digit",
+          }),
+        },
+        analisis: {
+          kategori: {
+            label: r.categories?.[0] || "Belum dianalisis",
+            color: "#3e8bf3",
+            bg: "rgba(62,139,243,0.2)",
+          },
+          urgensi: {
+            label: r.urgensi === "tinggi" ? "Tinggi" : r.urgensi === "sedang" ? "Sedang" : r.urgensi === "rendah" ? "Rendah" : "Belum dianalisis",
+            color: r.urgensi === "tinggi" ? "#ff0000" : r.urgensi === "sedang" ? "#eb7600" : "#1a8c3c",
+            bg: r.urgensi === "tinggi" ? "rgba(255,0,0,0.2)" : r.urgensi === "sedang" ? "rgba(235,118,0,0.2)" : "rgba(26,140,60,0.2)",
+          },
+          lokasi: {
+            label: r.kecamatan && r.kabupatenKota ? `${r.kecamatan}, ${r.kabupatenKota}` : "-",
+            color: "#1a8c3c",
+            bg: "rgba(26,140,60,0.2)",
+          },
+        },
+      });
+    } catch {
+      setLaporanDitemukan(null);
+    } finally {
+      setLoading(false);
+    }
+  };
 
-            <div className="bg-white p-6 md:p-8 rounded-2xl shadow-sm border border-gray-100 max-w-2xl mx-auto mb-10">
-                <form onSubmit={(e) => handleSearch(e)} className="flex flex-col sm:flex-row gap-3">
-                    <div className="relative flex-1">
-                        <svg className="absolute left-4 top-3.5 h-5 w-5 text-gray-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
-                        </svg>
-                        <input
-                            type="text"
-                            value={keyword}
-                            onChange={(e) => setKeyword(e.target.value)}
-                            placeholder="Masukkan Kode (Contoh: ADN-XXXX)"
-                            className="w-full pl-12 pr-4 py-3.5 rounded-xl border border-gray-300 font-raleway font-bold outline-none text-sm md:text-base"
-                        />
-                    </div>
-                    <button type="submit" className="bg-aduin-blue text-white px-6 py-3.5 rounded-xl font-bold font-inter hover:bg-aduin-blue/90 transition text-sm md:text-base shadow-md shadow-aduin-blue/10">
-                        Cari Laporan
-                    </button>
-                </form>
+  return (
+    <div className="bg-aduin-bg min-h-screen font-inter text-aduin-navy selection:bg-aduin-blue/20 pb-16">
+
+      {/* FORM PENCARIAN */}
+      <section className="container mx-auto pt-12 px-4 max-w-4xl text-center">
+        <h1 className="text-3xl md:text-4xl font-raleway font-bold tracking-tight text-aduin-navy mb-2">Lacak Pengaduan Anda</h1>
+        <p className="text-gray-500 text-sm md:text-base mb-8 max-w-2xl mx-auto font-raleway font-bold">
+          Pantau status laporan Anda secara real-time. Masukkan kode unik pengaduan Anda.
+        </p>
+
+        <div className="bg-white p-6 md:p-8 rounded-2xl shadow-sm border border-gray-100 max-w-2xl mx-auto mb-10">
+          <form onSubmit={handleSearch} className="flex flex-col sm:flex-row gap-3">
+            <div className="relative flex-1">
+              <svg className="absolute left-4 top-3.5 h-5 w-5 text-gray-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
+              </svg>
+              <input type="text" value={keyword} onChange={(e) => setKeyword(e.target.value)} placeholder="Masukkan Kode (Contoh: ADN-20260601-1234)"
+                className="w-full pl-12 pr-4 py-3.5 rounded-xl border border-gray-300 font-raleway font-bold outline-none text-sm md:text-base" />
             </div>
+            <button type="submit" disabled={loading}
+              className="bg-aduin-blue text-white px-6 py-3.5 rounded-xl font-bold font-inter hover:bg-aduin-blue/90 transition text-sm md:text-base shadow-md shadow-aduin-blue/10 disabled:opacity-50">
+              {loading ? "Mencari..." : "Cari Laporan"}
+            </button>
+          </form>
+        </div>
+      </section>
+
+      {/* KONDISI SEBELUM CARI */}
+      {!hasSearched && (
+        <section className="container mx-auto px-4 max-w-5xl grid grid-cols-1 md:grid-cols-3 gap-6">
+          <div className="bg-white p-6 rounded-2xl border border-gray-100 shadow-sm hover:shadow-md transition">
+            <div className="bg-aduin-blue/10 text-aduin-blue w-12 h-12 rounded-xl flex items-center justify-center mb-4">
+              <svg className="w-7 h-7" fill="#3e8bf3" viewBox="0 0 24 24"><path d="M23,11a1,1,0,0,0-1,1,10.034,10.034,0,1,1-2.9-7.021A.862.862,0,0,1,19,5H16a1,1,0,0,0,0,2h3a3,3,0,0,0,3-3V1a1,1,0,0,0-2,0V3.065A11.994,11.994,0,1,0,24,12,1,1,0,0,0,23,11ZM12,6a1,1,0,0,0-1,1v5a1,1,0,0,0,.293.707l3,3a1,1,0,0,0,1.414-1.414L13,11.586V7A1,1,0,0,0,12,6Z"/></svg>
+            </div>
+            <h3 className="font-bold text-lg mb-3 text-aduin-navy font-raleway">Pelacakan Real-Time</h3>
+            <p className="text-gray-500 text-sm leading-relaxed font-raleway font-bold">Setiap pembaruan status tercatat secara instan tanpa tunda.</p>
+          </div>
+          <div className="bg-white p-6 rounded-2xl border border-gray-100 shadow-sm hover:shadow-md transition">
+            <div className="bg-aduin-blue/10 text-aduin-blue w-12 h-12 rounded-xl flex items-center justify-center mb-4">
+              <svg className="w-7 h-7" viewBox="0 0 24 24" fill="none" stroke="#3e8bf3" strokeWidth="1.5" strokeLinecap="round"><path d="M22,19H15a3,3,0,0,0-3,3h0V5a3,3,0,0,1,3-3h7Z"/><path d="M2,19H9a3,3,0,0,1,3,3h0V5A3,3,0,0,0,9,2H2Z"/></svg>
+            </div>
+            <h3 className="font-bold text-lg mb-3 text-aduin-navy font-raleway">Keterbukaan Instansi</h3>
+            <p className="text-gray-500 text-sm leading-relaxed font-raleway font-bold">Lihat dinas mana yang menangani laporan Anda.</p>
+          </div>
+          <div className="bg-white p-6 rounded-2xl border border-gray-100 shadow-sm hover:shadow-md transition">
+            <div className="bg-aduin-blue/10 text-aduin-blue w-12 h-12 rounded-xl flex items-center justify-center mb-4">
+              <svg className="w-7 h-7" viewBox="0 0 24 24" fill="none" stroke="#3e8bf3" strokeWidth="1.5"><circle cx="12" cy="12" r="10"/><path d="M12 8v4l3 3"/></svg>
+            </div>
+            <h3 className="font-bold text-lg mb-3 text-aduin-navy font-raleway">Analisis & Urgensi</h3>
+            <p className="text-gray-500 text-sm leading-relaxed font-raleway font-bold">Sistem mengelompokkan keluhan berdasarkan tingkat kedaruratan.</p>
+          </div>
         </section>
+      )}
 
-        {/* KONDISI SEBELUM CARI - INFORMASI RELEVAN FITUR PELAKACAN */}
-        {!hasSearched && (
-            <section className="container mx-auto px-4 max-w-5xl grid grid-cols-1 md:grid-cols-3 gap-6">
-                
-                {/* Card 1: Real-Time Tracking */}
-                <div className="bg-white p-6 rounded-2xl border border-gray-100 shadow-sm hover:shadow-md transition">
-                    <div className="bg-aduin-blue/10 text-aduin-blue w-12 h-12 rounded-xl flex items-center justify-center mb-4 text-xl">
-                        <svg className='w-7 h-7' fill="#000000" viewBox="0 0 24 24" id="Layer_1" data-name="Layer 1" xmlns="http://www.w3.org/2000/svg"><g id="SVGRepo_bgCarrier" stroke-width="0"></g><g id="SVGRepo_tracerCarrier" stroke-linecap="round" stroke-linejoin="round"></g><g id="SVGRepo_iconCarrier"> <path d="M23,11a1,1,0,0,0-1,1,10.034,10.034,0,1,1-2.9-7.021A.862.862,0,0,1,19,5H16a1,1,0,0,0,0,2h3a3,3,0,0,0,3-3V1a1,1,0,0,0-2,0V3.065A11.994,11.994,0,1,0,24,12,1,1,0,0,0,23,11Z M12,6a1,1,0,0,0-1,1v5a1,1,0,0,0,.293.707l3,3a1,1,0,0,0,1.414-1.414L13,11.586V7A1,1,0,0,0,12,6Z"></path></g></svg>
+      {/* DATA TIDAK KETEMU */}
+      {hasSearched && !laporanDitemukan && !loading && (
+        <section className="container mx-auto px-4 max-w-2xl text-center py-8">
+          <div className="bg-white p-8 rounded-2xl border border-gray-100 shadow-sm">
+            <div className="mx-auto flex items-center justify-center h-20 w-20 rounded-full bg-red-50 mb-6">
+              <svg className="h-12 w-12 text-red-500" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={3} d="M6 18L18 6M6 6l12 12" />
+              </svg>
+            </div>
+            <h3 className="text-xl font-bold mb-2 font-raleway">Data Laporan Tidak Ditemukan</h3>
+            <p className="text-gray-500 text-sm mb-4 font-raleway font-bold">Pastikan kode pengaduan yang Anda masukkan sudah benar.</p>
+          </div>
+        </section>
+      )}
+
+      {/* DETAIL LAPORAN */}
+      {hasSearched && laporanDitemukan && (
+        <section className="container mx-auto px-4 max-w-6xl">
+          <div className="mb-6 mt-10">
+            <h2 className="text-2xl md:text-3xl font-extrabold text-aduin-navy font-raleway">Detail Laporan #{laporanDitemukan.id}</h2>
+            <p className="text-gray-500 text-sm font-pridi">Laporan Pengaduan Masyarakat</p>
+          </div>
+
+          <div className="grid grid-cols-1 lg:grid-cols-3 gap-6 items-start">
+
+            {/* KOLOM KIRI */}
+            <div className="lg:col-span-2 space-y-6">
+
+              {/* Progress Tracker */}
+              <div className="bg-white p-6 md:p-8 rounded-2xl border border-gray-100 shadow-sm">
+                <h3 className="text-xs font-bold text-gray-400 tracking-wider uppercase mb-8">KEMAJUAN LAPORAN</h3>
+                <div className="relative flex justify-between items-center max-w-md mx-auto">
+                  <div className="absolute left-0 right-0 top-5 h-1 bg-gray-100 -z-0"></div>
+                  <div className="absolute left-0 top-5 h-1 bg-aduin-blue -z-0 transition-all duration-500" style={{
+                    width: laporanDitemukan.status === "Selesai" ? '100%' : laporanDitemukan.status === "Proses" ? '50%' : '0%'
+                  }}></div>
+
+                  {/* Step 1 */}
+                  <div className="z-10 text-center flex flex-col items-center">
+                    <div className="w-10 h-10 rounded-xl bg-aduin-blue text-white flex items-center justify-center font-bold shadow-md">
+                      <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2.5}><path strokeLinecap="round" strokeLinejoin="round" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" /></svg>
                     </div>
-                    <h3 className="font-bold text-lg mb-3 text-aduin-navy font-raleway">Pelacakan Real-Time</h3>
-                    <p className="text-gray-500 text-sm leading-relaxed font-raleway font-bold">
-                        Setiap pembaruan status, mulai dari verifikasi admin, disposisi dinas, hingga aksi lapangan oleh petugas operasional akan tercatat secara instan tanpa tunda.
-                    </p>
-                </div>
+                    <span className="text-xs font-bold mt-2 text-aduin-navy font-raleway">Pengajuan</span>
+                  </div>
 
-                {/* Card 2: Disposisi Transparan */}
-                <div className="bg-white p-6 rounded-2xl border border-gray-100 shadow-sm hover:shadow-md transition">
-                    <div className="bg-aduin-blue/10 text-aduin-blue w-12 h-12 rounded-xl flex items-center justify-center mb-4 text-xl">
-                        <svg className='w-7 h-7' viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg" fill="none" stroke="#000000" stroke-width="1.2" stroke-linecap="round" stroke-linejoin="miter"><g id="SVGRepo_bgCarrier" stroke-width="0"></g><g id="SVGRepo_tracerCarrier" stroke-linecap="round" stroke-linejoin="round"></g><g id="SVGRepo_iconCarrier"><path d="M22,19H15a3,3,0,0,0-3,3h0V5a3,3,0,0,1,3-3h7Z"></path><path d="M2,19H9a3,3,0,0,1,3,3h0V5A3,3,0,0,0,9,2H2Z"></path></g></svg>
+                  {/* Step 2 */}
+                  <div className="z-10 text-center flex flex-col items-center">
+                    <div className={`w-10 h-10 rounded-xl flex items-center justify-center font-bold transition-all duration-300 ${laporanDitemukan.status === "Proses" || laporanDitemukan.status === "Selesai" ? 'bg-aduin-blue text-white shadow-md' : 'bg-gray-100 text-gray-400'}`}>
+                      <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2.5}>
+                        {laporanDitemukan.status === "Selesai"
+                          ? <path strokeLinecap="round" strokeLinejoin="round" d="M5 13l4 4L19 7" />
+                          : <path strokeLinecap="round" strokeLinejoin="round" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />}
+                      </svg>
                     </div>
-                    <h3 className="font-bold text-lg mb-3 text-aduin-navy font-raleway">Keterbukaan Instansi</h3>
-                    <p className="text-gray-500 text-sm leading-relaxed font-raleway font-bold">
-                        Anda dapat melihat instansi atau Dinas Teknis mana yang bertanggung jawab menangani laporan Anda, lengkap dengan catatan kemajuan dari petugas di lapangan.
-                    </p>
-                </div>
+                    <span className={`text-xs font-bold mt-2 font-raleway ${laporanDitemukan.status === "Proses" || laporanDitemukan.status === "Selesai" ? 'text-aduin-blue' : 'text-gray-400'}`}>Diproses</span>
+                  </div>
 
-                {/* Card 3: Otomatisasi Klasifikasi */}
-                <div className="bg-white p-6 rounded-2xl border border-gray-100 shadow-sm hover:shadow-md transition">
-                    <div className="bg-aduin-blue/10 text-aduin-blue w-12 h-12 rounded-xl flex items-center justify-center mb-4 text-xl">
-                        <svg className='w-7 h-7' viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" stroke="#000000" stroke-width="0.00024000000000000003"><g id="SVGRepo_bgCarrier" stroke-width="0"></g><g id="SVGRepo_tracerCarrier" stroke-linecap="round" stroke-linejoin="round"></g><g id="SVGRepo_iconCarrier"> <path fill-rule="evenodd" clip-rule="evenodd" d="M11.7086 1.53214C10.9786 1.05676 10.078 0.917375 9.27255 1.04467C8.46803 1.17183 7.62325 1.5904 7.12591 2.39445C6.9332 2.70601 6.81024 3.04646 6.7559 3.40767C5.97312 3.35525 5.18086 3.59264 4.58547 4.08919C3.98255 4.59201 3.59741 5.34432 3.59741 6.25684C3.59741 6.55614 3.63851 6.86315 3.72008 7.17654C3.42298 7.23942 3.13697 7.34918 2.86932 7.50027C1.98542 7.99927 1.36438 8.90663 1.11913 9.88841C0.869371 10.8882 0.989124 12.0467 1.70052 13.0391C2.0609 13.5419 2.54903 13.9691 3.1623 14.305C3.01053 14.5081 2.88229 14.7271 2.77811 14.9565C2.35249 15.8935 2.32044 17.0038 2.64559 17.98C2.97535 18.9701 3.69756 19.8871 4.83624 20.3254C5.57833 20.6111 6.42615 20.6665 7.35551 20.4749C7.39798 20.9494 7.52745 21.3806 7.74983 21.7577C8.22598 22.5651 9.0236 22.9458 9.80541 22.9947C10.5523 23.0414 11.3758 22.778 12 22.2458C12.6242 22.778 13.4477 23.0414 14.1946 22.9947C14.9764 22.9458 15.774 22.5651 16.2502 21.7577C16.4725 21.3806 16.602 20.9494 16.6445 20.4749C17.5738 20.6665 18.4217 20.6111 19.1638 20.3254C20.3024 19.8871 21.0246 18.9701 21.3544 17.98C21.6796 17.0038 21.6475 15.8935 21.2219 14.9565C21.1177 14.7271 20.9895 14.5081 20.8377 14.305C21.451 13.9691 21.9391 13.5419 22.2995 13.0391C23.0109 12.0467 23.1306 10.8882 22.8809 9.88841C22.6356 8.90663 22.0146 7.99927 21.1307 7.50027C20.863 7.34918 20.577 7.23942 20.2799 7.17654C20.3615 6.86315 20.4026 6.55614 20.4026 6.25684C20.4026 5.34432 20.0175 4.59201 19.4145 4.08919C18.8191 3.59264 18.0269 3.35525 17.2441 3.40767C17.1898 3.04646 17.0668 2.70601 16.8741 2.39445C16.3767 1.5904 15.532 1.17183 14.7274 1.04467C13.922 0.917375 13.0214 1.05676 12.2914 1.53214C11.9861 1.73097 12.0139 1.73097 11.7086 1.53214ZM13.0033 20.0518L13.0033 17.5288C13.0045 17.0494 13.1133 16.3457 13.3939 15.7998C13.6573 15.2872 13.9946 15.0268 14.5082 15.0268C15.0623 15.0268 15.5115 14.5773 15.5115 14.0227C15.5115 13.4682 15.0623 13.0186 14.5082 13.0186C13.9202 13.0186 13.4216 13.16 13.0033 13.3894V12.5084C13.0045 12.029 13.1133 11.3254 13.3939 10.7794C13.6573 10.2668 13.9946 10.0064 14.5082 10.0064C15.0623 10.0064 15.5115 9.55688 15.5115 9.00234C15.5115 8.4478 15.0623 7.99826 14.5082 7.99826C13.9202 7.99826 13.4216 8.13957 13.0033 8.36902L13.0033 3.97532C13.005 3.57853 13.1671 3.35779 13.3859 3.21528C13.6436 3.04746 14.0284 2.96723 14.4144 3.02824C14.8013 3.08939 15.0539 3.26704 15.1679 3.45142C15.2603 3.60078 15.3726 3.9329 15.091 4.59054C14.9015 5.03294 15.0524 5.54766 15.4507 5.8175C15.849 6.08734 16.3825 6.03639 16.7226 5.69604C17.0903 5.32811 17.7563 5.32032 18.1299 5.63189C18.2795 5.75662 18.396 5.94564 18.396 6.25684C18.396 6.59422 18.2548 7.14633 17.705 7.91672C17.4235 8.31116 17.4637 8.85055 17.8006 9.19878C18.1375 9.54701 18.6749 9.60465 19.0779 9.33577C19.5101 9.04741 19.8566 9.08664 20.1448 9.24934C20.4837 9.44063 20.8032 9.85112 20.9342 10.3755C21.0607 10.8818 20.9923 11.4176 20.669 11.8686C20.3466 12.3184 19.6765 12.8121 18.3565 13.0323C17.8683 13.1137 17.5124 13.5392 17.5182 14.0344C17.5239 14.5296 17.8896 14.9467 18.3795 15.0167C18.8812 15.0884 19.207 15.3732 19.3952 15.7874C19.5966 16.231 19.6273 16.8151 19.4508 17.345C19.2789 17.861 18.9351 18.2619 18.4434 18.4511C17.9498 18.6411 17.1399 18.6809 15.9267 18.129C15.5761 17.9695 15.1653 18.025 14.8694 18.2716C14.5735 18.5183 14.4448 18.9127 14.5382 19.2866C14.6621 19.7827 14.8668 20.9406 14.0694 20.9905C13.5184 21.0249 13.0062 20.6055 13.0033 20.0518ZM10.9967 3.97532C10.995 3.57853 10.8329 3.35779 10.6141 3.21528C10.3564 3.04746 9.97157 2.96723 9.58558 3.02824C9.19869 3.08939 8.94611 3.26704 8.83207 3.45142C8.73968 3.60078 8.62739 3.9329 8.90901 4.59054C9.09846 5.03294 8.94757 5.54766 8.54931 5.8175C8.15105 6.08734 7.61747 6.03639 7.27739 5.69604C6.90975 5.32811 6.24365 5.32032 5.87006 5.63189C5.72051 5.75662 5.604 5.94564 5.604 6.25684C5.604 6.59422 5.74515 7.14633 6.29501 7.91672C6.57653 8.31116 6.53629 8.85055 6.19937 9.19878C5.86246 9.54701 5.32505 9.60465 4.92206 9.33577C4.48987 9.04741 4.1434 9.08664 3.8552 9.24934C3.51634 9.44063 3.19679 9.85112 3.06581 10.3755C2.93933 10.8818 3.0077 11.4176 3.33095 11.8686C3.65342 12.3184 4.32349 12.8121 5.64353 13.0323C6.13166 13.1137 6.48757 13.5392 6.48182 14.0344C6.47607 14.5296 6.11037 14.9467 5.62048 15.0167C5.1188 15.0884 4.793 15.3732 4.60484 15.7874C4.40339 16.231 4.37273 16.8151 4.54922 17.345C4.7211 17.861 5.06489 18.2619 5.55656 18.4511C6.05021 18.6411 6.86015 18.6809 8.0733 18.129C8.42388 17.9695 8.83474 18.025 9.13063 18.2716C9.42652 18.5183 9.5552 18.9127 9.4618 19.2866C9.33788 19.7827 9.13324 20.9406 9.93058 20.9905C10.4816 21.0249 10.9938 20.6055 10.9967 20.0518L10.9967 20.0472V17.5292C10.9955 17.0498 10.8868 16.3459 10.6061 15.7998C10.3427 15.2872 10.0054 15.0268 9.49176 15.0268C8.93765 15.0268 8.48846 14.5773 8.48846 14.0227C8.48846 13.4682 8.93765 13.0186 9.49176 13.0186C10.0798 13.0186 10.5784 13.16 10.9967 13.3894V12.5088C10.9955 12.0294 10.8868 11.3255 10.6061 10.7794C10.3427 10.2668 10.0054 10.0064 9.49176 10.0064C8.93765 10.0064 8.48846 9.55688 8.48846 9.00234C8.48846 8.4478 8.93765 7.99826 9.49176 7.99826C10.0798 7.99826 10.5784 8.13957 10.9967 8.36902L10.9967 3.97532Z" fill="#0F0F0F"></path> </g></svg>
+                  {/* Step 3 */}
+                  <div className="z-10 text-center flex flex-col items-center">
+                    <div className={`w-10 h-10 rounded-xl flex items-center justify-center font-bold transition-all duration-300 ${laporanDitemukan.status === "Selesai" ? 'bg-aduin-blue text-white shadow-md' : 'bg-gray-100 text-gray-400'}`}>
+                      <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2.5}>
+                        {laporanDitemukan.status === "Selesai"
+                          ? <path strokeLinecap="round" strokeLinejoin="round" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
+                          : <path strokeLinecap="round" strokeLinejoin="round" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />}
+                      </svg>
                     </div>
-                    <h3 className="font-bold text-lg mb-3 text-aduin-navy font-raleway">Analisis & Urgensi</h3>
-                    <p className="text-gray-500 text-sm leading-relaxed font-raleway font-bold">
-                        Sistem mengelompokkan keluhan Anda berdasarkan tingkat kedaruratan wilayah, klaster laporan sejenis, serta penilaian skor skala prioritas penanganan.
-                    </p>
+                    <span className={`text-xs font-bold mt-2 font-raleway ${laporanDitemukan.status === "Selesai" ? 'text-aduin-navy' : 'text-gray-400'}`}>Selesai</span>
+                  </div>
                 </div>
+              </div>
 
-            </section>
-        )}
-
-        {/* DATA TIDAK KETEMU */}
-        {hasSearched && !laporanDitemukan && (
-            <section className="container mx-auto px-4 max-w-2xl text-center py-8">
-                <div className="bg-white p-8 rounded-2xl border border-gray-100 shadow-sm">
-                    <div className="mx-auto flex items-center justify-center h-20 w-20 rounded-full bg-red-50 mb-6">
-                        <svg className="h-12 w-12 text-aduin-red" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={3} d="M6 18L18 6M6 6l12 12" />
-                        </svg>
-                    </div>
-                    <h3 className="text-xl font-bold mb-2 font-raleway">Data Laporan Tidak Ditemukan</h3>
-                    <p className="text-gray-500 text-sm mb-4 font-raleway font-bold">Kode pengaduan salah</p>
+              {/* Disposisi */}
+              <div className="bg-white rounded-2xl border border-gray-100 shadow-sm overflow-hidden">
+                <div className="p-4 bg-gray-50/50 border-b border-gray-200 flex justify-between items-center">
+                  <span className="text-sm font-bold text-aduin-navy font-raleway">Disposisi Penanganan</span>
+                  <span className="px-3 py-1 bg-aduin-blue/10 text-aduin-blue text-xs font-bold rounded-lg font-raleway">
+                    Status: {laporanDitemukan.status}
+                  </span>
                 </div>
-            </section>
-        )}
+                <div className="p-6 md:p-8 space-y-4">
+                    {laporanDitemukan.disposisi ? (
+                        <blockquote className="border-l-4 border-aduin-blue pl-4 text-sm text-gray-600 leading-relaxed font-pridi">
+                        Laporan telah diteruskan ke{" "}
+                        <span className="text-aduin-blue font-semibold">{laporanDitemukan.disposisi}</span>.
+                        </blockquote>
+                    ) : (
+                        <p className="text-sm text-gray-500 italic">Laporan baru masuk, menunggu verifikasi admin.</p>
+                    )}
 
-        {/* DETAIL LAPORAN (DATA KETEMU) */}
-        {hasSearched && laporanDitemukan && (
-            <section className="container mx-auto px-4 max-w-6xl animate-fade-in">
-                <div className="mb-6 mt-10">
-                    <h2 className="text-2xl md:text-3xl font-extrabold text-aduin-navy font-raleway">Detail Laporan #{laporanDitemukan.id}</h2>
-                    <p className="text-gray-500 text-sm font-pridi">Laporan Pengaduan Masyarakat</p>
-                </div>
-
-                <div className="grid grid-cols-1 lg:grid-cols-3 gap-6 items-start">
-                    
-                    {/* KOLOM KIRI (PROGRESS TRACKER & STATUS) */}
-                    <div className="lg:col-span-2 space-y-6">
-                    
-                    {/* Tracker Kemajuan Dinamis */}
-                    <div className="bg-white p-6 md:p-8 rounded-2xl border border-gray-100 shadow-sm">
-                        <h3 className="text-xs font-bold text-gray-400 tracking-wider uppercase mb-8">KEMAJUAN LAPORAN</h3>
-                        
-                        <div className="relative flex justify-between items-center max-w-md mx-auto">
-                            <div className="absolute left-0 right-0 top-5 h-1 bg-gray-100 -z-0"></div>
-                            
-                            {/* Kalkulasi Lebar Progress Line berdasarkan Status */}
-                            <div className="absolute left-0 top-5 h-1 bg-aduin-blue -z-0 transition-all duration-500" style={{
-                                width: laporanDitemukan.status === "Selesai" ? '100%' : laporanDitemukan.status === "Proses" ? '50%' : '0%'
-                            }}></div>
-
-                            {/* Step 1: Diajukan */}
-                            <div className="z-10 text-center flex flex-col items-center">
-                                <div className="w-10 h-10 rounded-xl bg-aduin-blue text-white flex items-center justify-center font-bold shadow-md">
-                                    <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2.5}>
-                                        <path strokeLinecap="round" strokeLinejoin="round" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
-                                    </svg>
-                                </div>
-                                <span className="text-xs font-bold mt-2 text-aduin-navy font-raleway">Pengajuan</span>
-                            </div>
-
-                            {/* Step 2: Proses Penanganan */}
-                            <div className="z-10 text-center flex flex-col items-center">
-                                <div className={`w-10 h-10 rounded-xl flex items-center justify-center font-bold transition-all duration-300 ${laporanDitemukan.status === "Proses" || laporanDitemukan.status === "Selesai" ? 'bg-aduin-blue text-white shadow-md' : 'bg-gray-100 text-gray-400'}`}>
-                                    {laporanDitemukan.status === "Selesai" ? (
-                                        /* Ikon Centang Selesai */
-                                        <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2.5}>
-                                            <path strokeLinecap="round" strokeLinejoin="round" d="M5 13l4 4L19 7" />
-                                        </svg>
-                                    ) : (
-                                        /* Ikon Loading/Proses */
-                                        <svg className="w-5 h-5" fill="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
-                                            <path d="M23,12A11,11,0,0,1,4.963,20.451l-.256.256A1,1,0,0,1,4,21a.987.987,0,0,1-.383-.076A1,1,0,0,1,3,20V18a1,1,0,0,1,1-1H6a1,1,0,0,1,.707,1.707l-.322.322A9,9,0,1,0,3,12a9.107,9.107,0,0,0,.18,1.8,1,1,0,0,1-1.96.4A11,11,0,1,1,23,12ZM12,5a1,1,0,0,0-1,1v6a1,1,0,0,0,1,1h5a1,1,0,0,0,0-2H13V6A1,1,0,0,0,12,5Z"></path>
-                                        </svg>
-                                    )}
-                                </div>
-                                <span className={`text-xs font-bold mt-2 font-raleway ${laporanDitemukan.status === "Proses" || laporanDitemukan.status === "Selesai" ? 'text-aduin-blue' : 'text-gray-400'}`}>Diproses</span>
-                            </div>
-
-                            {/* Step 3: Selesai */}
-                            <div className="z-10 text-center flex flex-col items-center">
-                                <div className={`w-10 h-10 rounded-xl flex items-center justify-center font-bold transition-all duration-300 ${laporanDitemukan.status === "Selesai" ? 'bg-aduin-blue text-white shadow-md' : 'bg-gray-100 text-gray-400'}`}>
-                                    {laporanDitemukan.status === "Selesai" ? (
-                                        /* Ikon Centang */
-                                        <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2.5}>
-                                            <path strokeLinecap="round" strokeLinejoin="round" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
-                                        </svg>
-                                    ) : (
-                                        /* Ikon Menunggu */
-                                        <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2.5}>
-                                            <path strokeLinecap="round" strokeLinejoin="round" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
-                                        </svg>
-                                    )}
-                                </div>
-                                <span className={`text-xs font-bold mt-2 font-raleway ${laporanDitemukan.status === "Selesai" ? 'text-aduin-navy' : 'text-gray-400'}`}>Selesai</span>
-                            </div>
-                        </div>
-                    </div>
-
-                    {/* Status Instansi Disposisi */}
-                    <div className="bg-white rounded-2xl border border-gray-100 shadow-sm overflow-hidden">
-                        <div className="p-4 bg-gray-50/50 border-b border-gray-200 flex justify-between items-center">
-                        <div className="flex items-center gap-2 text-sm font-bold text-aduin-navy font-raleway">
-                            Disposisi Penanganan
-                        </div>
-                        <span className="px-3 py-1 bg-aduin-blue/10 text-aduin-blue text-xs font-bold rounded-lg font-raleway">
-                            Status: {laporanDitemukan.status}
-                        </span>
-                        </div>
-                        <div className="p-6 md:p-8">
-                        {laporanDitemukan.disposisi ? (
-                            <blockquote className="border-l-4 border-aduin-blue pl-4 text-sm md:text-base text-gray-600 leading-relaxed font-normal font-pridi">
-                            Laporan saat ini telah diteruskan dan sedang ditangani oleh <span className="text-aduin-blue font-semi-bold">{laporanDitemukan.disposisi}</span>. 
-                            {laporanDitemukan.catatan && ` Catatan tambahan: ${laporanDitemukan.catatan}`}
-                            </blockquote>
-                        ) : (
-                            <p className="text-sm text-gray-500 italic">Laporan baru masuk, menunggu verifikasi Admin untuk disposisi dinas terkait.</p>
-                        )}
-                        <p className="text-xs text-gray-500 mt-4 font-raleway">
-                            Tanggal Masuk: {laporanDitemukan.pelapor.tanggal}
+                    {/* Catatan admin — tampil kalau ada */}
+                    {laporanDitemukan.catatan && (
+                        <div className="rounded-xl p-4" style={{ background: "rgba(62,139,243,0.05)", border: "1px solid rgba(62,139,243,0.15)" }}>
+                        <p className="text-xs font-bold font-raleway uppercase tracking-wider mb-1.5" style={{ color: "#3e8bf3" }}>
+                            Catatan dari Admin
+                        </p>
+                        <p className="text-sm font-raleway text-gray-600 leading-relaxed">
+                            {laporanDitemukan.catatan}
                         </p>
                         </div>
-                    </div>
+                    )}
 
-                    </div>
-
-                    {/* KOLOM KANAN (RINGKASAN DATA LAPORAN & KATEGORI ANALISIS) */}
-                    <div className="bg-white p-6 md:p-8 rounded-2xl border border-gray-100 shadow-sm space-y-6">
-                    <h3 className="font-extrabold text-lg border-b border-gray-200 pb-3 font-raleway">Ringkasan Pengaduan</h3>
-                    
-                    <div>
-                        <h4 className="text-xs font-bold text-gray-400 uppercase tracking-wider mb-1">Isi Keluhan</h4>
-                        <p className="text-sm text-gray-600 leading-relaxed font-raleway font-bold">"{laporanDitemukan.text}"</p>
-                    </div>
-
-                    {/* Tampilan Tag badge Analisis AI bawaan temanmu */}
-                    <div className="space-y-2 border-t border-b border-gray-100 py-4">
-                        <h4 className="text-xs font-bold text-gray-400 uppercase tracking-wider mb-2">Hasil Analisis Sistem</h4>
-                        <div className="flex flex-wrap gap-2">
-                        <span className="px-2.5 py-1 rounded-md text-xs font-bold font-raleway" style={{ backgroundColor: laporanDitemukan.analisis.kategori.bg, color: laporanDitemukan.analisis.kategori.color }}>
-                            {laporanDitemukan.analisis.kategori.label}
-                        </span>
-                        <span className="px-2.5 py-1 rounded-md text-xs font-bold font-raleway" style={{ backgroundColor: laporanDitemukan.analisis.urgensi.bg, color: laporanDitemukan.analisis.urgensi.color }}>
-                            Urgensi: {laporanDitemukan.analisis.urgensi.label}
-                        </span>
-                        <span className="px-2.5 py-1 rounded-md text-xs font-bold font-raleway" style={{ backgroundColor: laporanDitemukan.analisis.lokasi.bg, color: laporanDitemukan.analisis.lokasi.color }}>
-                            {laporanDitemukan.analisis.lokasi.label}
-                        </span>
-                        </div>
-                    </div>
-
-                    <div>
-                        <h4 className="text-xs font-bold text-gray-400 uppercase tracking-wider mb-2">Lampiran Foto Bukti</h4>
-                        {laporanDitemukan.photos[0] ? (
-                        <div className="rounded-xl overflow-hidden bg-gray-100 border border-gray-200">
-                            <img src={laporanDitemukan.photos[0]} alt="Bukti aduan" className="w-full h-40 object-cover" />
-                        </div>
-                        ) : (
-                        <div className="border border-dashed border-gray-300 rounded-xl p-6 text-center bg-gray-50 text-gray-400 text-xs">
-                            Tidak ada lampiran foto bukti dari pelapor.
-                        </div>
-                        )}
-                    </div>
-                    </div>
-
+                    <p className="text-xs text-gray-500 font-raleway">
+                        Tanggal Masuk: {laporanDitemukan.pelapor.tanggal}
+                    </p>
                 </div>
-            </section>
-        )}
-        </div>
-    );
+              </div>
+            </div>
+
+            {/* KOLOM KANAN */}
+            <div className="bg-white p-6 md:p-8 rounded-2xl border border-gray-100 shadow-sm space-y-6">
+              <h3 className="font-extrabold text-lg border-b border-gray-200 pb-3 font-raleway">Ringkasan Pengaduan</h3>
+              <div>
+                <h4 className="text-xs font-bold text-gray-400 uppercase tracking-wider mb-1">Isi Keluhan</h4>
+                <p className="text-sm text-gray-600 leading-relaxed font-raleway font-bold">"{laporanDitemukan.text}"</p>
+              </div>
+              <div className="space-y-2 border-t border-b border-gray-100 py-4">
+                <h4 className="text-xs font-bold text-gray-400 uppercase tracking-wider mb-2">Hasil Analisis Sistem</h4>
+                <div className="flex flex-wrap gap-2">
+                  <span className="px-2.5 py-1 rounded-md text-xs font-bold font-raleway" style={{ backgroundColor: laporanDitemukan.analisis.kategori.bg, color: laporanDitemukan.analisis.kategori.color }}>
+                    {laporanDitemukan.analisis.kategori.label}
+                  </span>
+                  <span className="px-2.5 py-1 rounded-md text-xs font-bold font-raleway" style={{ backgroundColor: laporanDitemukan.analisis.urgensi.bg, color: laporanDitemukan.analisis.urgensi.color }}>
+                    Urgensi: {laporanDitemukan.analisis.urgensi.label}
+                  </span>
+                  <span className="px-2.5 py-1 rounded-md text-xs font-bold font-raleway" style={{ backgroundColor: laporanDitemukan.analisis.lokasi.bg, color: laporanDitemukan.analisis.lokasi.color }}>
+                    {laporanDitemukan.analisis.lokasi.label}
+                  </span>
+                </div>
+              </div>
+              <div>
+                <h4 className="text-xs font-bold text-gray-400 uppercase tracking-wider mb-2">Lampiran Foto Bukti</h4>
+                {laporanDitemukan.photos[0] ? (
+                  <div className="rounded-xl overflow-hidden bg-gray-100 border border-gray-200">
+                    <img src={laporanDitemukan.photos[0]} alt="Bukti" className="w-full h-40 object-cover" />
+                  </div>
+                ) : (
+                  <div className="border border-dashed border-gray-300 rounded-xl p-6 text-center bg-gray-50 text-gray-400 text-xs">
+                    Tidak ada lampiran foto bukti.
+                  </div>
+                )}
+              </div>
+            </div>
+          </div>
+        </section>
+      )}
+    </div>
+  );
 }

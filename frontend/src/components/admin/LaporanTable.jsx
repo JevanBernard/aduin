@@ -26,18 +26,18 @@ function getStatusStyle(status) {
 }
 
 const COLUMNS = [
-  { key: "id", label: "No. Laporan", width: "11%" },
+  { key: "id", label: "No. Laporan", width: "10%" },
   { key: "text", label: "Text Laporan", width: "22%" },
   { key: "kategori", label: "Kategori", width: "11%" },
   { key: "urgensi", label: "Urgensi", width: "8%" },
   { key: "score", label: "Score", width: "8%" },
-  { key: "status", label: "Status", width: "8%" },
   { key: "disposisi", label: "Disposisi", width: "12%" },
-  { key: "waktu", label: "Waktu", width: "12%" },
-  { key: "aksi", label: "Aksi", width: "8%" },
+  { key: "waktu", label: "Waktu", width: "10%" },
+  { key: "aksi", label: "Aksi", width: "7%" },
+  { key: "status", label: "Status", width: "8%" },
 ];
 
-export default function LaporanTable({ data }) {
+export default function LaporanTable({ data, currentPage, totalPages, onPageChange }) {
   const { dark } = useTheme();
   const navigate = useNavigate();
 
@@ -55,15 +55,10 @@ export default function LaporanTable({ data }) {
       }}
     >
       {/* Table header */}
-      <div
-        className="flex items-center px-6 py-4"
-        style={{ borderBottom: `1px solid ${borderColor}` }}
-      >
+      <div className="flex items-center px-6 py-4" style={{ borderBottom: `1px solid ${borderColor}` }}>
         {COLUMNS.map((col) => (
           <div key={col.key} style={{ width: col.width }} className="shrink-0">
-            <span className="text-sm font-bold font-raleway" style={{ color: textPrimary }}>
-              {col.label}
-            </span>
+            <span className="text-sm font-bold font-raleway" style={{ color: textPrimary }}>{col.label}</span>
           </div>
         ))}
       </div>
@@ -71,12 +66,10 @@ export default function LaporanTable({ data }) {
       {/* Table rows */}
       {data.length === 0 ? (
         <div className="py-16 text-center">
-          <p className="text-sm font-raleway" style={{ color: textSecondary }}>
-            Tidak ada laporan yang sesuai filter
-          </p>
+          <p className="text-sm font-raleway" style={{ color: textSecondary }}>Tidak ada laporan yang sesuai filter</p>
         </div>
       ) : (
-        data.map((row, idx) => {
+        data.map((row) => {
           const urgStyle = getUrgensiStyle(row.urgensi);
           const statStyle = getStatusStyle(row.status);
 
@@ -86,86 +79,96 @@ export default function LaporanTable({ data }) {
               className="flex items-center px-6 py-3 transition-colors duration-150 hover:bg-black/[0.02] dark:hover:bg-white/[0.02]"
               style={{ borderBottom: `1px solid ${dark ? "#1e293b22" : "#f1f5f9"}` }}
             >
-              {/* No. Laporan */}
-              <div style={{ width: "11%" }} className="shrink-0">
+              <div style={{ width: "10%" }} className="shrink-0">
                 <span className="text-xs font-raleway" style={{ color: textSecondary }}>{row.id}</span>
               </div>
-
-              {/* Text Laporan */}
               <div style={{ width: "22%" }} className="shrink-0 pr-3">
-                <span
-                  className="text-xs font-raleway block truncate"
-                  style={{ color: textSecondary }}
-                  title={row.text}
-                >
-                  {row.text}
-                </span>
+                <span className="text-xs font-raleway block truncate" style={{ color: textSecondary }} title={row.text}>{row.text}</span>
               </div>
-
-              {/* Kategori */}
               <div style={{ width: "11%" }} className="shrink-0">
-                <span className="text-xs font-bold font-raleway" style={{ color: textPrimary }}>
-                  {row.kategori}
-                </span>
+                <span className="text-xs font-bold font-raleway" style={{ color: textPrimary }}>{row.kategori}</span>
               </div>
-
-              {/* Urgensi */}
               <div style={{ width: "8%" }} className="shrink-0">
-                <span
-                  className="text-xs font-bold font-raleway px-3 py-1 rounded"
-                  style={{ background: urgStyle.bg, color: urgStyle.color }}
-                >
-                  {row.urgensi}
-                </span>
+                <span className="text-xs font-bold font-raleway px-3 py-1 rounded" style={{ background: urgStyle.bg, color: urgStyle.color }}>{row.urgensi}</span>
               </div>
-
-              {/* Score */}
               <div style={{ width: "8%" }} className="shrink-0">
-                <span
-                  className="text-xl font-bold font-inter"
-                  style={{ color: getScoreColor(row.score) }}
-                >
-                  {row.score}
-                </span>
+                <span className="text-xl font-bold font-inter" style={{ color: getScoreColor(row.score) }}>{row.score}</span>
               </div>
-
-              {/* Status */}
-              <div style={{ width: "8%" }} className="shrink-0">
-                <span
-                  className="text-xs font-bold font-raleway px-3 py-1 rounded"
-                  style={{ background: statStyle.bg, color: statStyle.color }}
-                >
-                  {row.status}
-                </span>
-              </div>
-
-              {/* Disposisi */}
               <div style={{ width: "12%" }} className="shrink-0">
-                <span className="text-xs font-raleway" style={{ color: row.disposisi ? textSecondary : (dark ? "#334155" : "#ccc") }}>
-                  {row.disposisi || "-"}
-                </span>
+                <span className="text-xs font-raleway" style={{ color: row.disposisi ? textSecondary : (dark ? "#334155" : "#ccc") }}>{row.disposisi || "-"}</span>
               </div>
-
-              {/* Waktu */}
-              <div style={{ width: "12%" }} className="shrink-0">
-                <span className="text-xs font-raleway font-light" style={{ color: textSecondary }}>
-                  {row.waktu}
-                </span>
+              <div style={{ width: "10%" }} className="shrink-0">
+                <span className="text-xs font-raleway font-light" style={{ color: textSecondary }}>{row.waktu}</span>
               </div>
-
-              {/* Aksi */}
+              <div style={{ width: "7%" }} className="shrink-0">
+                <button onClick={() => navigate(`/laporan/${row.id}`)} className="text-xs font-light italic underline font-raleway transition hover:opacity-70" style={{ color: "#008cff" }}>Detail</button>
+              </div>
               <div style={{ width: "8%" }} className="shrink-0">
-                <button
-                  onClick={() => navigate(`/laporan/${row.id}`)}
-                  className="text-xs font-light italic underline font-raleway transition hover:opacity-70"
-                  style={{ color: "#008cff" }}
-                >
-                  Detail
-                </button>
+                <span className="text-xs font-bold font-raleway px-3 py-1 rounded" style={{ background: statStyle.bg, color: statStyle.color }}>{row.status}</span>
               </div>
             </div>
           );
         })
+      )}
+
+      {/* Pagination */}
+      {totalPages > 1 && (
+        <div className="flex items-center justify-between px-6 py-4" style={{ borderTop: `1px solid ${borderColor}` }}>
+          <p className="text-xs font-raleway" style={{ color: textSecondary }}>
+            Halaman {currentPage} dari {totalPages}
+          </p>
+
+          <div className="flex items-center gap-1">
+            {/* Prev */}
+            <button
+              onClick={() => onPageChange(currentPage - 1)}
+              disabled={currentPage === 1}
+              className="px-3 py-1.5 rounded-md text-xs font-semibold font-raleway transition disabled:opacity-30"
+              style={{ background: dark ? "#1e293b" : "#fff", border: `1px solid ${dark ? "#334155" : "#e2e8f0"}`, color: textSecondary }}
+            >
+              ← Prev
+            </button>
+
+            {/* Page numbers */}
+            {Array.from({ length: totalPages }, (_, i) => i + 1).map((page) => {
+              // Show: first, last, current, and neighbors
+              if (page === 1 || page === totalPages || Math.abs(page - currentPage) <= 1) {
+                return (
+                  <button
+                    key={page}
+                    onClick={() => onPageChange(page)}
+                    className="w-8 h-8 rounded-md text-xs font-bold font-raleway transition"
+                    style={{
+                      background: page === currentPage ? "#3e8bf3" : (dark ? "#1e293b" : "#fff"),
+                      color: page === currentPage ? "#fff" : textSecondary,
+                      border: `1px solid ${page === currentPage ? "#3e8bf3" : (dark ? "#334155" : "#e2e8f0")}`,
+                    }}
+                  >
+                    {page}
+                  </button>
+                );
+              }
+              // Show ellipsis
+              if (page === 2 && currentPage > 3) {
+                return <span key="start-dots" className="px-1 text-xs" style={{ color: textSecondary }}>...</span>;
+              }
+              if (page === totalPages - 1 && currentPage < totalPages - 2) {
+                return <span key="end-dots" className="px-1 text-xs" style={{ color: textSecondary }}>...</span>;
+              }
+              return null;
+            })}
+
+            {/* Next */}
+            <button
+              onClick={() => onPageChange(currentPage + 1)}
+              disabled={currentPage === totalPages}
+              className="px-3 py-1.5 rounded-md text-xs font-semibold font-raleway transition disabled:opacity-30"
+              style={{ background: dark ? "#1e293b" : "#fff", border: `1px solid ${dark ? "#334155" : "#e2e8f0"}`, color: textSecondary }}
+            >
+              Next →
+            </button>
+          </div>
+        </div>
       )}
     </section>
   );
