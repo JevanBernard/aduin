@@ -101,7 +101,7 @@ const MOCK_DETAIL = {
 };
 
 // Set USE_MOCK = false kalau backend sudah jadi
-const USE_MOCK = true;
+const USE_MOCK = false;
 // ============ END MOCK ============
 
 function getUrgencyColor(urgent, total) {

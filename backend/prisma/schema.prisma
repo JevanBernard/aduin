@@ -15,7 +15,6 @@ model User {
   role      Role     @default(ADMIN)
   jabatan   String?
   instansi  String?
-  phone     String?
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 
@@ -24,35 +23,30 @@ model User {
 
 model Report {
   id            String   @id @default(uuid())
-  reportNumber  String   @unique  // ADN-YYYYMMDD-XXXX
+  reportNumber  String   @unique
   text          String
-  reporterName  String?  // null = anonim
+  reporterName  String?
   photoUrls     String[]
 
-  // Location
   kabupatenKota String
   kecamatan     String
   detailLokasi  String?
   latitude      Float?
   longitude     Float?
 
-  // NLP Results (filled by ML service)
-  categories    String[]   // multi-label: ["infrastruktur", "lingkungan"]
-  sentiment     String?    // negatif, netral, positif
-  sentimentScore Float?
-  urgency       String?    // tinggi, sedang, rendah
+  categories    String[]
+  urgensi       String?
   urgencyScore  Float?
-  priorityScore Float?     // 0-100
+  priorityScore Float?
   clusterId     String?
 
-  // Status & Disposisi
-  status        ReportStatus @default(DITERIMA)
+  status         ReportStatus @default(DITERIMA)
   disposisiDinas String?
-  catatanAdmin  String?
+  catatanAdmin   String?
+  source         String       @default("form_warga")
 
-  source        String     @default("form_warga")
-  createdAt     DateTime   @default(now())
-  updatedAt     DateTime   @updatedAt
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
 
   statusHistories StatusHistory[]
 }
@@ -60,10 +54,10 @@ model Report {
 model StatusHistory {
   id        String       @id @default(uuid())
   reportId  String
-  report    Report       @relation(fields: [reportId], references: [id])
+  report    Report       @relation(fields: [reportId], references: [id], onDelete: Cascade)
   status    ReportStatus
   note      String?
-  changedBy String?      // userId or "SYSTEM"
+  changedBy String?
   user      User?        @relation(fields: [changedBy], references: [id])
   createdAt DateTime     @default(now())
 }
@@ -80,4 +74,11 @@ enum ReportStatus {
   DIDISPOSISI
   DITINDAKLANJUTI
   SELESAI
+}
+
+model Setting {
+  id        String   @id @default(uuid())
+  key       String   @unique
+  value     String   // JSON string
+  updatedAt DateTime @updatedAt
 }

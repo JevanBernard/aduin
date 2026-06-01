@@ -2,6 +2,8 @@ import { useState, useRef, useEffect } from "react";
 import { useTheme } from "../../context/ThemeContext";
 import { PERIODS } from "../../data/dashboardData";
 import { ChevronDownIcon, SunIcon, MoonIcon, SearchIcon, MenuIcon, SettingsIcon } from "./Icons";
+import { useNavigate } from "react-router-dom";
+import { logout } from "../../hooks/useAuth";
 
 // ============ PERIOD DROPDOWN (UPDATED) ============
 export function PeriodDropdown({ selected, onChange }) {
@@ -11,6 +13,7 @@ export function PeriodDropdown({ selected, onChange }) {
   const [endDate, setEndDate] = useState("");
   const dropdownRef = useRef(null);
   const { dark } = useTheme();
+  const navigate = useNavigate();
 
   const PRESETS = [
     { label: "7 Hari Terakhir", value: "7d" },
@@ -322,7 +325,10 @@ export function ProfileDropdown() {
 
           {/* Logout */}
           <div style={{ borderTop: `1px solid ${dark ? "#334155" : "#f1f5f9"}` }}>
-            <button className="flex items-center gap-2.5 w-full px-4 py-2.5 text-sm font-raleway font-semibold text-left text-red-500">
+            <button
+              onClick={() => logout(navigate)}
+              className="flex items-center gap-2.5 w-full px-4 py-2.5 text-sm font-raleway font-semibold text-left text-red-500"
+            >
               <span>🚪</span> Logout
             </button>
           </div>
@@ -335,12 +341,23 @@ export function ProfileDropdown() {
 // ============ SEARCH BAR ============
 export function SearchBar() {
   const { dark } = useTheme();
+  const navigate = useNavigate();
+  const [value, setValue] = useState("");
+
+  const handleSearch = (e) => {
+    e.preventDefault();
+    if (value.trim()) {
+      navigate(`/laporan?search=${encodeURIComponent(value.trim())}`);
+    }
+  };
 
   return (
-    <div className="relative w-full sm:w-72">
+    <form onSubmit={handleSearch} className="relative w-full sm:w-72">
       <SearchIcon className="w-5 h-5 absolute left-3.5 top-1/2 -translate-y-1/2 text-gray-500" />
       <input
         type="search"
+        value={value}
+        onChange={(e) => setValue(e.target.value)}
         placeholder="Cari Laporan, Lokasi...."
         className="w-full pl-11 pr-4 py-3 rounded-lg text-sm font-semibold font-raleway outline-none transition"
         style={{
@@ -349,7 +366,7 @@ export function SearchBar() {
         }}
         aria-label="Cari laporan atau lokasi"
       />
-    </div>
+    </form>
   );
 }
 
