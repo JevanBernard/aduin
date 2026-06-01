@@ -7,6 +7,10 @@ import LaporanDetailPage from "./pages/LaporanDetailPage";
 import TrendPage from "./pages/TrendPage";
 import SettingsPage from "./pages/SettingsPage";
 
+import FormPage from "./pages/FormPage";
+import SuccessPage from "./pages/SuccessPage";
+import CekStatusPage from "./pages/CekStatusPage";
+
 export default function App() {
   return (
     <ThemeProvider>
@@ -28,12 +32,12 @@ export default function App() {
           <Route path="/profile" element={<ProfilePage />} />
           <Route path="/login" element={<LoginPage />} />
           */}
-
-          {/* Warga routes
+          
+          {/* Warga routes */}
           <Route path="/lapor" element={<FormPage />} />
           <Route path="/lapor/sukses/:id" element={<SuccessPage />} />
           <Route path="/cek-status" element={<CekStatusPage />} />
-          */}
+
         </Routes>
       </BrowserRouter>
     </ThemeProvider>
