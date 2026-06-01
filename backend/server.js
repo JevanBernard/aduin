@@ -11,7 +11,7 @@ const wilayahRoutes = require("./src/routes/wilayahRoutes");
 
 const allowedOrigins = [
   "http://localhost:5173",
-  "https://your-app.vercel.app", // ← update setelah deploy frontend
+  "aduin-production.up.railway.app", // ← update setelah deploy frontend
 ];
 
 const app = express();
