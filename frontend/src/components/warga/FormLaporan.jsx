@@ -2,6 +2,8 @@ import React, { useState, useEffect, useRef } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { createReport } from '../../services/api';
 
+const API_URL = import.meta.env.VITE_API_URL || "https://aduin-production.up.railway.app/api";
+
 const FormLaporan = () => {
   const navigate = useNavigate();
 
@@ -23,11 +25,10 @@ const FormLaporan = () => {
 
   // Fetch wilayah dari backend
   useEffect(() => {
-    fetch("http://localhost:3000/api/wilayah/public")
+    fetch(`${API_URL}/wilayah/public`)
       .then((r) => r.json())
       .then((res) => {
         if (res.data) {
-          // Convert array [{nama, kecamatan:[]}] ke {nama: [kecamatan]}
           const mapped = {};
           res.data.forEach((w) => {
             mapped[w.nama] = w.kecamatan || [];
@@ -36,7 +37,6 @@ const FormLaporan = () => {
         }
       })
       .catch(() => {
-        // Fallback hardcode kalau API error
         setWilayahData({
           "Denpasar": ["Denpasar Barat", "Denpasar Selatan", "Denpasar Timur", "Denpasar Utara"],
           "Badung": ["Abiansemal", "Kuta", "Kuta Selatan", "Kuta Utara", "Mengwi", "Petang"],
