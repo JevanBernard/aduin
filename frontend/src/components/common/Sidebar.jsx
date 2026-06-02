@@ -8,7 +8,7 @@ import laporanIcon from "../../assets/icons/laporan.svg";
 import trenIcon from "../../assets/icons/tren.svg";
 import pengaturanIcon from "../../assets/icons/pengaturan.svg";
 import logoutIcon from "../../assets/icons/logout.svg";
-import logoImg from "../../assets/logo.jpg";
+import logoImg from "../../assets/logo.svg";
 
 const MENU_ICONS = [
   { label: "Overview", src: overviewIcon, path: "/" },
