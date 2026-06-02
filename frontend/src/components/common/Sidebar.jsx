@@ -8,7 +8,6 @@ import laporanIcon from "../../assets/icons/laporan.svg";
 import trenIcon from "../../assets/icons/tren.svg";
 import pengaturanIcon from "../../assets/icons/pengaturan.svg";
 import logoutIcon from "../../assets/icons/logout.svg";
-import logoImg from "../../assets/logo_a.svg";
 
 const MENU_ICONS = [
   { label: "Overview", src: overviewIcon, path: "/" },
@@ -25,7 +24,6 @@ export default function Sidebar({ isOpen, onClose }) {
 
   const handleNav = (path) => {
     navigate(path);
-    // Tutup sidebar di mobile setelah klik
     if (onClose) onClose();
   };
 
@@ -57,17 +55,14 @@ export default function Sidebar({ isOpen, onClose }) {
       >
         {/* ====== LOGO (atas) ====== */}
         <div className="shrink-0 mb-4 cursor-pointer" onClick={() => handleNav("/")}>
-          {/* Logo */}
-            <img
-              src={logoImg}
-              alt="ADUIN Logo"
-              className="w-12 h-12 rounded-xl object-cover"
-              onError={(e) => {
-                e.target.style.display = "none";
-                e.target.parentElement.innerHTML =
-                  '<span style="font-family:Pridi;font-size:48px;color:#021d54">a</span>';
-              }}
-            />
+          <div
+            className="w-12 h-12 rounded-xl flex items-center justify-center"
+            style={{ background: "#021d54" }}
+          >
+            <span style={{ fontFamily: "'Pridi', serif", fontSize: 32, color: "#fff", lineHeight: 1 }}>
+              a
+            </span>
+          </div>
         </div>
 
         {/* ====== MENU ICONS (tengah) ====== */}
@@ -76,7 +71,6 @@ export default function Sidebar({ isOpen, onClose }) {
           aria-label="Menu utama"
         >
           {MENU_ICONS.map((item, i) => {
-            // Cek apakah halaman ini yang sedang aktif
             const isActive =
               item.path === "/"
                 ? location.pathname === "/"
@@ -118,23 +112,19 @@ export default function Sidebar({ isOpen, onClose }) {
         {/* ====== LOGOUT (bawah) ====== */}
         <div className="shrink-0 mt-4">
           <button
-            onClick={() => {
-              // TODO: nanti tambah logic logout (clear token, redirect ke /login)
-              navigate("/login");
-            }}
+            onClick={() => handleNav("/login")}
             className="w-11 h-11 rounded-xl flex items-center justify-center transition-all duration-200 hover:bg-red-500/10 cursor-pointer"
             title="Logout"
             aria-label="Logout"
           >
-            {/* Logout icon */}
-              <img
-                src={logoutIcon}
-                alt="Logout"
-                className="w-7 h-7"
-                style={{
-                  filter: dark ? "brightness(0.4)" : "brightness(0) opacity(0.35)",
-                }}
-              />
+            <img
+              src={logoutIcon}
+              alt="Logout"
+              className="w-7 h-7"
+              style={{
+                filter: dark ? "brightness(0.4)" : "brightness(0) opacity(0.35)",
+              }}
+            />
           </button>
         </div>
       </aside>
