@@ -1,12 +1,21 @@
 import { useNavigate, useLocation } from "react-router-dom";
 import { useTheme } from "../../context/ThemeContext";
 
+// Import icon langsung
+import overviewIcon from "../../assets/icons/overview.svg";
+import mapIcon from "../../assets/icons/map.svg";
+import laporanIcon from "../../assets/icons/laporan.svg";
+import trenIcon from "../../assets/icons/tren.svg";
+import pengaturanIcon from "../../assets/icons/pengaturan.svg";
+import logoutIcon from "../../assets/icons/logout.svg";
+import logoImg from "../../assets/logo.jpg";
+
 const MENU_ICONS = [
-  { label: "Overview", src: "/src/assets/icons/overview.svg", path: "/" },
-  { label: "Peta", src: "/src/assets/icons/map.svg", path: "/peta" },
-  { label: "Laporan", src: "/src/assets/icons/laporan.svg", path: "/laporan" },
-  { label: "Tren", src: "/src/assets/icons/tren.svg", path: "/tren" },
-  { label: "Pengaturan", src: "/src/assets/icons/pengaturan.svg", path: "/settings" },
+  { label: "Overview", src: overviewIcon, path: "/" },
+  { label: "Peta", src: mapIcon, path: "/peta" },
+  { label: "Laporan", src: laporanIcon, path: "/laporan" },
+  { label: "Tren", src: trenIcon, path: "/tren" },
+  { label: "Pengaturan", src: pengaturanIcon, path: "/settings" },
 ];
 
 export default function Sidebar({ isOpen, onClose }) {
@@ -48,16 +57,17 @@ export default function Sidebar({ isOpen, onClose }) {
       >
         {/* ====== LOGO (atas) ====== */}
         <div className="shrink-0 mb-4 cursor-pointer" onClick={() => handleNav("/")}>
-          <img
-            src="/src/assets/logo.jpg"
-            alt="ADUIN Logo"
-            className="w-12 h-12 rounded-xl object-cover"
-            onError={(e) => {
-              e.target.style.display = "none";
-              e.target.parentElement.innerHTML =
-                '<span style="font-family:Pridi;font-size:48px;color:#021d54">a</span>';
-            }}
-          />
+          {/* Logo */}
+            <img
+              src={logoImg}
+              alt="ADUIN Logo"
+              className="w-12 h-12 rounded-xl object-cover"
+              onError={(e) => {
+                e.target.style.display = "none";
+                e.target.parentElement.innerHTML =
+                  '<span style="font-family:Pridi;font-size:48px;color:#021d54">a</span>';
+              }}
+            />
         </div>
 
         {/* ====== MENU ICONS (tengah) ====== */}
@@ -116,14 +126,15 @@ export default function Sidebar({ isOpen, onClose }) {
             title="Logout"
             aria-label="Logout"
           >
-            <img
-              src="/src/assets/icons/logout.svg"
-              alt="Logout"
-              className="w-7 h-7"
-              style={{
-                filter: dark ? "brightness(0.4)" : "brightness(0) opacity(0.35)",
-              }}
-            />
+            {/* Logout icon */}
+              <img
+                src={logoutIcon}
+                alt="Logout"
+                className="w-7 h-7"
+                style={{
+                  filter: dark ? "brightness(0.4)" : "brightness(0) opacity(0.35)",
+                }}
+              />
           </button>
         </div>
       </aside>
