@@ -55,11 +55,13 @@ export default function Sidebar({ isOpen, onClose }) {
       >
         {/* ====== LOGO (atas) ====== */}
         <div className="shrink-0 mb-4 cursor-pointer" onClick={() => handleNav("/")}>
-          <div
-            className="w-12 h-12 rounded-xl flex items-center justify-center"
-            // style={{ background: dark ? "#1e293b" : "#021d54" }}
-          >
-            <span style={{ fontFamily: "'Pridi', serif", fontSize: 32, color: "#fff", lineHeight: 1 }}>
+          <div className="w-12 h-12 rounded-xl flex items-center justify-center">
+            <span style={{
+              fontFamily: "'Pridi', serif",
+              fontSize: 32,
+              color: dark ? "#fff" : "#021d54", // ← warna menyesuaikan theme
+              lineHeight: 1
+            }}>
               a
             </span>
           </div>
@@ -98,9 +100,9 @@ export default function Sidebar({ isOpen, onClose }) {
                   className="w-7 h-7"
                   style={{
                     filter: isActive
-                      ? "none"
+                      ? dark ? "brightness(1) opacity(1)" : "none"
                       : dark
-                        ? "brightness(0.7) opacity(0.8)"  // ← naikkan dari 0.4 ke 0.7
+                        ? "brightness(0.7) opacity(0.8)"
                         : "brightness(0) opacity(0.35)",
                   }}
                 />
@@ -122,11 +124,10 @@ export default function Sidebar({ isOpen, onClose }) {
               alt="Logout"
               className="w-7 h-7"
               style={{
-                filter: isActive
-                  ? "none"
-                  : dark
-                    ? "brightness(0.7) opacity(0.8)"  // ← naikkan dari 0.4 ke 0.7
-                    : "brightness(0) opacity(0.35)",
+                filter: dark
+                  ? "brightness(0.7) opacity(0.8)"
+                  : "brightness(0) opacity(0.35)",
+                // ← hapus isActive, tidak ada di sini
               }}
             />
           </button>
