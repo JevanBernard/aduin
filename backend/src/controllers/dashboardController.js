@@ -325,7 +325,11 @@ async function getTrends(req, res, next) {
           { name: "Selesai", color: "#1a8c3c", data: selesaiData },
         ],
         subtitle: `${kategori && kategori !== "Semua Kategori" ? kategori : "Semua kategori"} · ${
-          period === "7d" ? "7 hari" : period === "30d" ? "30 hari" : period === "90d" ? "90 hari" : "Custom"
+          period === "7d" ? "7 hari terakhir" 
+        : period === "30d" ? "30 hari terakhir" 
+        : period === "90d" ? "90 hari terakhir" 
+        : (start && end) ? `${start} s/d ${end}` 
+        : "Custom"
         } terakhir${wilayah && wilayah !== "Semua Wilayah" ? ` · ${wilayah}` : ""}`,
       },
     });

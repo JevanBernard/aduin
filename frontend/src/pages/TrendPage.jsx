@@ -5,11 +5,12 @@ import Sidebar from "../components/common/Sidebar";
 import { PeriodDropdown, ThemeToggle, ProfileDropdown } from "../components/common/Header";
 import FilterDropdown from "../components/admin/FilterDropdown";
 import { MOCK_TREND_LINE, MOCK_DISTRIBUSI, MOCK_TOP_WILAYAH } from "../data/trendData";
-import { STATUS_OPTIONS, KATEGORI_OPTIONS, WILAYAH_OPTIONS } from "../data/laporanData";
+import { STATUS_OPTIONS, KATEGORI_OPTIONS } from "../data/laporanData";
 import { getTrends, getDistribusi, getTopWilayah } from "../services/api";
 import html2canvas from "html2canvas";
 import jsPDF from "jspdf";
 import { useNavigate } from "react-router-dom";
+import { useWilayahOptions } from "../hooks/useWilayahOptions";
 
 export default function TrendPage() {
   const { dark } = useTheme();
@@ -29,6 +30,8 @@ export default function TrendPage() {
 
   const navigate = useNavigate();
   const [searchValue, setSearchValue] = useState("");
+
+  const wilayahOptions = useWilayahOptions();
 
   // Fetch semua data saat period berubah
   useEffect(() => {
@@ -236,7 +239,7 @@ export default function TrendPage() {
             <div className="flex items-center gap-2">
               <FilterDropdown options={STATUS_OPTIONS} selected={filterStatus} onChange={setFilterStatus} />
               <FilterDropdown options={KATEGORI_OPTIONS} selected={filterKategori} onChange={setFilterKategori} />
-              <FilterDropdown options={WILAYAH_OPTIONS} selected={filterWilayah} onChange={setFilterWilayah} />
+              <FilterDropdown options={wilayahOptions} selected={filterWilayah} onChange={setFilterWilayah} />
             </div>
           </div>
 
@@ -287,7 +290,7 @@ export default function TrendPage() {
                       <div key={i} className="flex items-center gap-3">
                         <span className="text-sm font-bold font-raleway w-28 shrink-0" style={{ color: textPrimary }}>{item.name}</span>
                         <div className="flex-1 h-1.5 rounded-full" style={{ background: dark ? "#1e293b" : "#cfcfcf" }}>
-                          <div className="h-full rounded-full transition-all duration-700" style={{ width: `${item.percentage * 2.8}%`, background: item.color }} />
+                          <div className="h-full rounded-full transition-all duration-700" style={{ width: `${Math.min(item.percentage, 100)}%`, background: item.color }} />
                         </div>
                         <span className="text-xl font-bold font-inter shrink-0 w-14 text-right" style={{ color: item.color }}>{item.percentage}%</span>
                       </div>

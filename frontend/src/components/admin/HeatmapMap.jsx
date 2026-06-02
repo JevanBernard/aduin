@@ -21,6 +21,7 @@ function parseColor(colorStr, opacity) {
 export default function HeatmapMap({
   data, selectedIdx, onSelectWilayah,
   filterKat, onFilterKat, filterUrg, onFilterUrg,
+  kategoriFilter, urgensiFilter,
 }) {
   const { dark } = useTheme();
 
@@ -37,7 +38,7 @@ export default function HeatmapMap({
 
       {/* Filter kategori */}
       <div className="absolute top-3 left-3 z-[1000] flex flex-wrap gap-1.5">
-        {KATEGORI_FILTER.map((k) => (
+        {kategoriFilter.map((k) => (
           <button
             key={k}
             onClick={() => onFilterKat(k)}

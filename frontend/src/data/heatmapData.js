@@ -12,7 +12,11 @@ export const heatmapData = [
   { name: "Jembrana", x: "15%", y: "48%", size: 20, count: 72, urgent: 9, color: "34,197,94", opacity: 0.4, top: ["Ekonomi (30%)", "Infrastruktur (28%)", "Lingkungan (18%)"] },
 ];
 
-export const KATEGORI_FILTER = ["Semua", "Infrastruktur", "Lingkungan", "Bencana", "Air", "Transportasi"];
+export const KATEGORI_FILTER = [
+  "Semua", "Infrastruktur", "Lingkungan", "Bencana",
+  "Air & Sanitasi", "Transportasi", "Ekonomi",
+  "Keamanan", "Pendidikan", "Kesehatan", "Pelayanan Publik"
+];
 export const URGENSI_FILTER = [
   { label: "Semua", color: "#64748B" },
   { label: "Tinggi", color: "#DC2626" },

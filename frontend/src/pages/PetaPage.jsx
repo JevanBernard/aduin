@@ -5,6 +5,7 @@ import HeatmapPanel from "../components/admin/HeatmapPanel";
 import useHeatmap from "../hooks/useHeatmap";
 import { PeriodDropdown } from "../components/common/Header";
 import { useState, useEffect, useRef } from "react";
+import { useKategori } from "../hooks/useSettings";
 
 export default function PetaPage() {
   const { dark } = useTheme();
@@ -22,6 +23,9 @@ export default function PetaPage() {
     if (period.type === "custom") return `custom&start=${period.start}&end=${period.end}`;
     return "7d";
 };
+
+  const { kategori: kategoriList } = useKategori();
+  const kategoriFilter = ["Semua", ...kategoriList];
 
   // Data dari API via custom hook
   const {
@@ -45,10 +49,19 @@ export default function PetaPage() {
 
   // Filter data berdasarkan kategori & urgensi
   const filteredData = wilayahList.filter((w) => {
+    // Filter urgensi
     if (filterUrg === "Tinggi" && w.urgent / w.count < 0.3) return false;
     if (filterUrg === "Sedang" && (w.urgent / w.count >= 0.3 || w.urgent / w.count < 0.15)) return false;
     if (filterUrg === "Rendah" && w.urgent / w.count >= 0.15) return false;
-    // Kategori filter bisa ditambah logic nanti kalau data top_categories ada
+
+    // Filter kategori — cek apakah wilayah punya kategori tersebut di topCategories
+    if (filterKat !== "Semua") {
+      const hasKategori = w.topCategories?.some(
+        (cat) => cat.name.toLowerCase().includes(filterKat.toLowerCase())
+      );
+      if (!hasKategori) return false;
+    }
+
     return true;
   });
 
@@ -213,6 +226,8 @@ export default function PetaPage() {
               onFilterKat={setFilterKat}
               filterUrg={filterUrg}
               onFilterUrg={setFilterUrg}
+              kategoriFilter={kategoriFilter}
+              urgensiFilter={URGENSI_FILTER.map(u => u.label)}
             />
 
             <HeatmapPanel

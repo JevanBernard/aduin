@@ -80,7 +80,7 @@ export default function HeatmapPanel({
                         <div className="flex-1 h-1.5 rounded-full" style={{ background: dark ? "#1e293b" : "#F1F5F9" }}>
                           <div
                             className="h-full rounded-full transition-all duration-500"
-                            style={{ width: `${cat.percentage * 2.5}%`, background: colors[i % colors.length] }}
+                            style={{ width: `${Math.min(cat.percentage, 100)}%`, background: colors[i % colors.length] }}
                           />
                         </div>
                         <span className="text-[10px] font-bold font-inter w-10 text-right" style={{ color: textPrimary }}>
