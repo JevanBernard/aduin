@@ -1,6 +1,7 @@
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { useTheme } from "../context/ThemeContext";
+import { loginAPI } from "../services/api";
 
 // Kredensial sementara — nanti ganti dengan JWT dari backend
 const CREDENTIALS = [
@@ -23,17 +24,9 @@ export default function LoginPage() {
     setLoading(true);
 
     try {
-      // Panggil API backend
-      const res = await fetch("http://localhost:3000/api/auth/login", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ email, password }),
-      });
-
-      const data = await res.json();
+      const data = await loginAPI(email, password);
 
       if (data.success) {
-        // Simpan user + token ke localStorage
         localStorage.setItem("aduin_user", JSON.stringify({
           ...data.user,
           token: data.token,
