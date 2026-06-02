@@ -57,9 +57,9 @@ export default function Sidebar({ isOpen, onClose }) {
         <div className="shrink-0 mb-4 cursor-pointer" onClick={() => handleNav("/")}>
           <div
             className="w-12 h-12 rounded-xl flex items-center justify-center"
-            // style={{ background: "#021d54" }}
+            style={{ background: dark ? "#1e293b" : "#021d54" }}
           >
-            <span style={{ fontFamily: "'Pridi', serif", fontSize: 32, color: "#021d54", lineHeight: 1 }}>
+            <span style={{ fontFamily: "'Pridi', serif", fontSize: 32, color: "#fff", lineHeight: 1 }}>
               a
             </span>
           </div>
@@ -98,10 +98,10 @@ export default function Sidebar({ isOpen, onClose }) {
                   className="w-7 h-7"
                   style={{
                     filter: isActive
-                      ? "none"
+                      ? "invert(1) opacity(0.9)"  // aktif: putih terang
                       : dark
-                        ? "brightness(0.4)"
-                        : "brightness(0) opacity(0.35)",
+                        ? "invert(1) opacity(0.4)"  // dark tidak aktif: putih redup
+                        : "brightness(0) opacity(0.35)",  // light tidak aktif: hitam redup
                   }}
                 />
               </button>
