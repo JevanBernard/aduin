@@ -86,7 +86,7 @@ export default function HeatmapPeta({ period }) {
       </div>
 
       {/* Map */}
-      <div className="flex-1 relative" style={{ minHeight: 400 }}>
+      <div className="relative" style={{ height: 400 }}>
         {loading && (
           <div className="absolute inset-0 flex items-center justify-center z-10"
             style={{ background: dark ? "rgba(15,23,42,0.5)" : "rgba(255,255,255,0.5)" }}>
@@ -99,7 +99,7 @@ export default function HeatmapPeta({ period }) {
         <MapContainer
           center={[-8.45, 115.25]}
           zoom={10}
-          style={{ height: "100%", width: "100%", minHeight: 400 }}
+          style={{ height: "400px", width: "100%" }}
           zoomControl={false}
           scrollWheelZoom={false}
         >
