@@ -6,6 +6,7 @@ import useHeatmap from "../hooks/useHeatmap";
 import { PeriodDropdown } from "../components/common/Header";
 import { useState, useEffect, useRef } from "react";
 import { useKategori } from "../hooks/useSettings";
+import { URGENSI_FILTER } from "../data/heatmapData";
 
 export default function PetaPage() {
   const { dark } = useTheme();
