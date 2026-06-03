@@ -31,7 +31,13 @@ body {
 }
 
 /* Fix leaflet z-index agar filter/legend tetap di atas peta */
+.leaflet-container {
+  z-index: 0 !important;
+}
+.leaflet-pane {
+  z-index: 0 !important;
+}
 .leaflet-top,
 .leaflet-bottom {
-  z-index: 999 !important;
+  z-index: 1 !important;
 }

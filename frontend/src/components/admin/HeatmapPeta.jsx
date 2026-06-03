@@ -72,6 +72,7 @@ export default function HeatmapPeta({ period }) {
         boxShadow: dark ? "0 2px 8px rgba(0,0,0,0.3)" : "0 4px 15px rgba(0,0,0,0.08)",
         border: dark ? "1px solid rgba(255,255,255,0.05)" : "2px solid #fff",
         minHeight: 400,
+        zIndex: 0
       }}
       aria-label="Peta heatmap sebaran masalah"
     >
@@ -151,7 +152,7 @@ export default function HeatmapPeta({ period }) {
 
         {/* Legend */}
         <div
-          className="absolute bottom-3 left-3 rounded-lg px-3 py-2 z-[1000]"
+          className="absolute bottom-3 left-3 rounded-lg px-3 py-2 z-[10]"
           style={{
             background: dark ? "rgba(15,23,42,0.92)" : "rgba(255,255,255,0.92)",
             border: `1px solid ${dark ? "#1e293b" : "#E2E8F0"}`,

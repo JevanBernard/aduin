@@ -31,7 +31,9 @@ export default function HeatmapMap({
   const tileAttribution = '&copy; <a href="https://carto.com/">CARTO</a> &copy; <a href="https://www.openstreetmap.org/copyright">OSM</a>';
 
   return (
-    <section className="flex-1 relative overflow-hidden flex flex-col">
+    <section className="flex-1 relative overflow-hidden flex flex-col"
+      style={{ zIndex: 0 }} 
+    >
 
       {/* ===== FILTER BAR (bukan absolute, bagian dari layout) ===== */}
       <div
@@ -134,7 +136,7 @@ export default function HeatmapMap({
 
         {/* Legend — absolute di dalam div map */}
         <div
-          className="absolute bottom-3 left-3 rounded-lg px-3 py-2 z-[1000]"
+          className="absolute bottom-3 left-3 rounded-lg px-3 py-2 z-[10]"
           style={{
             background: dark ? "rgba(15,23,42,0.92)" : "rgba(255,255,255,0.92)",
             border: `1px solid ${dark ? "#1e293b" : "#E2E8F0"}`,
