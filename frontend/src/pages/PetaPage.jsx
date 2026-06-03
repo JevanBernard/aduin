@@ -124,12 +124,12 @@ export default function PetaPage() {
       <main className="flex-1 min-w-0 flex flex-col ml-0 lg:ml-20" role="main">
         {/* Topbar */}
         <header
-          className="h-14 flex items-center justify-between px-5 shrink-0"
+          className="flex flex-wrap items-center justify-between gap-2 px-4 py-3 shrink-0"
           style={{ borderBottom: `1px solid ${dark ? "#1e293b" : "#e2e8f0"}` }}
         >
-          <div className="flex items-center gap-3">
+          <div className="flex items-center gap-3 min-w-0">
             <button
-              className="lg:hidden p-1.5 rounded-lg"
+              className="lg:hidden p-1.5 rounded-lg shrink-0"
               style={{ color: dark ? "#e2e8f0" : "#000" }}
               onClick={() => setSidebarOpen(true)}
               aria-label="Buka menu"
@@ -138,8 +138,8 @@ export default function PetaPage() {
                 <line x1="3" y1="6" x2="21" y2="6"/><line x1="3" y1="12" x2="21" y2="12"/><line x1="3" y1="18" x2="21" y2="18"/>
               </svg>
             </button>
-            <div>
-              <h1 className="text-base font-bold font-raleway" style={{ color: dark ? "#e2e8f0" : "#1e293b" }}>
+            <div className="min-w-0">
+              <h1 className="text-sm sm:text-base font-bold font-raleway truncate" style={{ color: dark ? "#e2e8f0" : "#1e293b" }}>
                 Peta Sebaran Masalah
               </h1>
               <p className="text-xs font-raleway" style={{ color: dark ? "#475569" : "#94a3b8" }}>
@@ -148,21 +148,25 @@ export default function PetaPage() {
             </div>
           </div>
 
-          <div className="flex items-center gap-2">
-            {/* Period selector */}
-            {/* Period selector - pakai PeriodDropdown yang sama dengan dashboard */}
-                <PeriodDropdown selected={period} onChange={(val) => { setPeriod(val); handleClose(); }} />
+          <div className="flex items-center gap-2 shrink-0">
+            <PeriodDropdown selected={period} onChange={(val) => { setPeriod(val); handleClose(); }} />
+            
+            {/* Export button — sama seperti halaman lain */}
             <div className="relative" ref={exportMenuRef}>
               <button
                 onClick={() => setExportMenu(!exportMenu)}
-                className="px-3 py-1.5 rounded-md text-xs font-semibold font-raleway transition hover:opacity-80"
-                style={{
-                  border: `1px solid ${dark ? "#334155" : "#e2e8f0"}`,
-                  color: dark ? "#94a3b8" : "#64748b",
-                  background: dark ? "#1e293b" : "#fff",
-                }}
+                className="flex items-center gap-2 px-4 py-2 rounded-md text-sm font-semibold font-raleway text-white transition hover:opacity-90"
+                style={{ background: "#1d6f42" }}
               >
-                Export ↓
+                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round">
+                  <path d="M21 15v4a2 2 0 01-2 2H5a2 2 0 01-2-2v-4"/>
+                  <polyline points="7 10 12 15 17 10"/>
+                  <line x1="12" y1="15" x2="12" y2="3"/>
+                </svg>
+                Export
+                <svg width="9" height="9" viewBox="0 0 12 12" className={`transition-transform ${exportMenu ? "rotate-180" : ""}`}>
+                  <path d="M2 4l4 4 4-4" stroke="currentColor" strokeWidth="2" fill="none" strokeLinecap="round" strokeLinejoin="round"/>
+                </svg>
               </button>
 
               {exportMenu && (
@@ -185,10 +189,7 @@ export default function PetaPage() {
                   <button
                     onClick={handleExportJSON}
                     className="flex items-center gap-3 w-full px-4 py-3 text-xs font-raleway font-semibold text-left transition hover:opacity-80"
-                    style={{
-                      color: dark ? "#e2e8f0" : "#333",
-                      borderTop: `1px solid ${dark ? "#334155" : "#f1f5f9"}`,
-                    }}
+                    style={{ color: dark ? "#e2e8f0" : "#333", borderTop: `1px solid ${dark ? "#334155" : "#f1f5f9"}` }}
                   >
                     <span style={{ color: "#3e8bf3" }}>📄</span> Export JSON
                   </button>

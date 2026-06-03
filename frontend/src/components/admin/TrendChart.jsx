@@ -32,7 +32,7 @@ export default function TrendChart() {
       }}
     >
       <h2 className="text-xl font-bold text-center mb-3.5 font-raleway" style={{ color: dark ? "#e2e8f0" : "#000" }}>
-        Tren Kategori
+        Tren Laporan Bulanan
       </h2>
 
       {loading ? (
