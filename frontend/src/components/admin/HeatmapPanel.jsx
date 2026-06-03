@@ -1,4 +1,5 @@
 import { useTheme } from "../../context/ThemeContext";
+import { useNavigate } from "react-router-dom";
 
 export default function HeatmapPanel({
   data, summary, selectedDetail, loadingDetail,
@@ -8,6 +9,7 @@ export default function HeatmapPanel({
   const border = dark ? "#1e293b" : "#E2E8F0";
   const textPrimary = dark ? "#e2e8f0" : "#1E293B";
   const textSecondary = dark ? "#94a3b8" : "#64748B";
+  const navigate = useNavigate();
 
   return (
     <aside
@@ -24,7 +26,7 @@ export default function HeatmapPanel({
             { l: "Total", v: summary.total.toLocaleString("id"), c: "#3B82F6" },
             { l: "Urgent", v: summary.urgent.toLocaleString("id"), c: "#DC2626" },
             { l: "Wilayah", v: `${summary.wilayah} Kab/Kota`, c: "#059669" },
-            { l: "Cluster", v: `${summary.clusters} isu`, c: "#7C3AED" },
+            // { l: "Cluster", v: `${summary.clusters} isu`, c: "#7C3AED" },
           ].map((s, i) => (
             <div key={i} className="rounded-md p-2" style={{ background: dark ? "#111827" : "#F8FAFC", border: `1px solid ${border}` }}>
               <p className="text-[9px] font-semibold uppercase font-raleway" style={{ color: textSecondary }}>{s.l}</p>
@@ -136,7 +138,10 @@ export default function HeatmapPanel({
               )}
 
               {/* CTA */}
-              <button className="w-full mt-3 py-2 rounded-md text-[11px] font-bold font-raleway text-white bg-blue-600 hover:bg-blue-700 transition">
+              <button
+                onClick={() => navigate(`/laporan?wilayah=${encodeURIComponent(selectedDetail.kabupaten_kota)}`)}
+                className="w-full mt-3 py-2 rounded-md text-[11px] font-bold font-raleway text-white bg-blue-600 hover:bg-blue-700 transition"
+              >
                 Lihat Semua Laporan {selectedDetail.kabupaten_kota} →
               </button>
             </>

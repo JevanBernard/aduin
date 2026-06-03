@@ -21,7 +21,6 @@ export default function LaporanPage() {
   const [search, setSearch] = useState(searchParams.get("search") || "");
   const [filterStatus, setFilterStatus] = useState("Semua Status");
   const [filterKategori, setFilterKategori] = useState("Semua Kategori");
-  const [filterWilayah, setFilterWilayah] = useState("Semua Wilayah");
   const [currentPage, setCurrentPage] = useState(1);
   const { kategori: kategoriList } = useKategori();
   const KATEGORI_OPTIONS_DYNAMIC = ["Semua Kategori", ...kategoriList];
@@ -30,6 +29,10 @@ export default function LaporanPage() {
   const [rawData, setRawData] = useState([]);
   const [loading, setLoading] = useState(true);
   const [totalFromAPI, setTotalFromAPI] = useState(0);
+
+  const [filterWilayah, setFilterWilayah] = useState(
+  searchParams.get("wilayah") || "Semua Wilayah"
+  );
 
   useEffect(() => {
     const q = searchParams.get("search");
