@@ -84,11 +84,11 @@ export default function LaporanDetailPage() {
               color: "#1a8c3c",
               bg: "rgba(26,140,60,0.2)",
             },
-            cluster: {
-              label: r.clusterId || "Belum dicluster",
-              color: "#3e8bf3",
-              bg: "rgba(62,139,243,0.2)",
-            },
+            // cluster: {
+            //   label: r.clusterId || "Belum dicluster",
+            //   color: "#3e8bf3",
+            //   bg: "rgba(62,139,243,0.2)",
+            // },
           },
           pelapor: {
             nama: r.reporterName || "Anonim",
@@ -97,6 +97,7 @@ export default function LaporanDetailPage() {
               hour: "2-digit", minute: "2-digit",
             }) + " WITA",
             sumber: r.source === "form_warga" ? "Form Warga" : r.source,
+            detailLokasi: r.detailLokasi || null,
           },
           riwayat: r.statusHistories?.map((h) => ({
             status: h.status,
@@ -194,7 +195,7 @@ export default function LaporanDetailPage() {
       ["Urgensi", data.analisis.urgensi.label],
       ["Priority Score", data.analisis.score.label],
       ["Lokasi", data.analisis.lokasi.label],
-      ["Cluster", data.analisis.cluster.label],
+      // ["Cluster", data.analisis.cluster.label],
       ["Nama Pelapor", data.pelapor.nama],
       ["Tanggal", data.pelapor.tanggal],
       ["Sumber", data.pelapor.sumber],
@@ -268,21 +269,20 @@ export default function LaporanDetailPage() {
               <section className="rounded-2xl p-6" style={{ background: cardBg, boxShadow: cardShadow, border: cardBorder }}>
                 <h2 className="text-xl font-bold font-raleway mb-3" style={{ color: textPrimary }}>Text Laporan</h2>
                 <p className="text-sm font-raleway leading-relaxed mb-5" style={{ color: textPrimary }}>{data.text}</p>
-                <div className="flex gap-3 flex-wrap">
-                  {data.photos.map((photo, i) => (
-                    <div
-                      key={i}
-                      className="w-28 h-28 rounded-lg flex items-center justify-center text-xs font-raleway overflow-hidden cursor-pointer transition hover:opacity-80 hover:scale-105"
-                      style={{ background: dark ? "#1e293b" : "#d9d9d9", color: dark ? "#475569" : "#94a3b8" }}
-                      onClick={() => photo && setLightboxPhoto(photo)}
-                    >
-                      {photo
-                        ? <img src={photo} alt={`Foto ${i + 1}`} className="w-full h-full object-cover" />
-                        : `Foto ${i + 1}`
-                      }
+                  {/* Hanya tampilkan kalau ada foto */}
+                  {data.photos.some(p => p !== null) && (
+                    <div className="flex gap-3 flex-wrap mt-5">
+                      {data.photos.filter(p => p !== null).map((photo, i) => (
+                        <div
+                          key={i}
+                          className="w-28 h-28 rounded-lg overflow-hidden cursor-pointer transition hover:opacity-80 hover:scale-105"
+                          onClick={() => setLightboxPhoto(photo)}
+                        >
+                          <img src={photo} alt={`Foto ${i + 1}`} className="w-full h-full object-cover" />
+                        </div>
+                      ))}
                     </div>
-                  ))}
-                </div>
+                  )}
 
                 {/* Lightbox */}
                 {lightboxPhoto && (
@@ -321,7 +321,7 @@ export default function LaporanDetailPage() {
                     { key: "urgensi", label: "URGENSI" },
                     { key: "score", label: "PRIORITY SCORE" },
                     { key: "lokasi", label: "LOKASI (NER)" },
-                    { key: "cluster", label: "CLUSTER" },
+                    // { key: "cluster", label: "CLUSTER" },
                   ].map(({ key, label }) => {
                     const item = data.analisis[key];
                     return (
@@ -344,9 +344,10 @@ export default function LaporanDetailPage() {
                   { label: "Nama", value: data.pelapor.nama },
                   { label: "Tanggal Lapor", value: data.pelapor.tanggal },
                   { label: "Sumber", value: data.pelapor.sumber },
-                ].map(({ label, value }, i) => (
+                  ...(data.pelapor.detailLokasi ? [{ label: "Detail Lokasi", value: data.pelapor.detailLokasi }] : []),
+                ].map(({ label, value }, i, arr) => (
                   <div key={i} className="flex justify-between py-2 font-inter"
-                    style={{ borderBottom: i < 2 ? `1px solid ${dark ? "#1e293b" : "#f1f5f9"}` : "none" }}>
+                    style={{ borderBottom: i < arr.length - 1 ? `1px solid ${dark ? "#1e293b" : "#f1f5f9"}` : "none" }}>
                     <span className="text-base" style={{ color: textPrimary }}>{label}</span>
                     <span className="text-base font-bold" style={{ color: textPrimary }}>{value}</span>
                   </div>
