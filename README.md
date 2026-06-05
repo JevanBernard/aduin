@@ -1,8 +1,8 @@
-# ADUIN — Analisis Digital Untuk Insight Nusantara
+# ADUIN - Analisis Digital Untuk Insight Nusantara
 
 <div align="center">
 
-  <h3>Platform NLP Pengaduan Masyarakat untuk Pemerintah Daerah Bali</h3>
+  <h3>Platform NLP Pengaduan Masyarakat untuk Pemerintah</h3>
   <p>Capstone Project CC26-PSU299 · Tema: Inclusive & Resilient Communities</p>
   <p>Dicoding — Coding Camp 2026</p>
 
@@ -45,7 +45,7 @@
 
 ## Tentang Proyek
 
-**ADUIN** adalah platform berbasis NLP (Natural Language Processing) yang dirancang untuk mengatasi permasalahan pengaduan masyarakat di Bali yang selama ini tidak terstruktur, tidak terprioritaskan, dan sulit dipantau oleh pemerintah daerah.
+**ADUIN** adalah platform berbasis NLP (Natural Language Processing) yang dirancang untuk mengatasi permasalahan pengaduan masyarakat di Indonesia yang selama ini tidak terstruktur, tidak terprioritaskan, dan sulit dipantau oleh pemerintah.
 
 ### Masalah yang Diselesaikan
 - Pengaduan masyarakat tersebar di berbagai kanal tanpa sistem terpusat
@@ -54,7 +54,7 @@
 - Tidak ada dashboard analitik untuk pengambilan keputusan berbasis data
 
 ### Solusi ADUIN
-- Form pengaduan digital yang mudah diakses seluruh warga Bali
+- Form pengaduan digital yang mudah diakses seluruh masyarakat
 - Klasifikasi kategori masalah **otomatis** menggunakan model ML multilabel
 - **Priority scoring** otomatis berdasarkan tingkat urgensi laporan
 - **Heatmap interaktif** sebaran laporan per kabupaten/kota
@@ -76,7 +76,7 @@
 | Fitur | Deskripsi |
 |---|---|
 | **Dashboard** | Statistik real-time: total laporan, urgensi, status, tren bulanan |
-| **Peta Heatmap** | Visualisasi interaktif sebaran masalah per wilayah di Bali |
+| **Peta Heatmap** | Visualisasi interaktif sebaran masalah per wilayah |
 | **Manajemen Laporan** | Tabel dengan filter status, kategori, wilayah, search, pagination |
 | **Detail Laporan** | AI analysis lengkap, foto bukti, disposisi ke dinas, riwayat status |
 | **Analisis Tren** | Grafik tren laporan per waktu dengan filter multi-dimensi |
@@ -179,7 +179,7 @@ aduin-repo/
 │   │   └── routes/                  # API routes
 │   ├── prisma/schema.prisma         # Database schema
 │   ├── seed.js                      # Seed users + wilayah dasar
-│   ├── seedWilayah.js               # Seed 9 kab/kota Bali + kecamatan
+│   ├── seedWilayah.js               # Seed 9 kab/kota Bali + kecamatan (sebagai data awal)
 │   ├── seedLaporan.js               # Seed 30 laporan sample
 │   ├── server.js
 │   └── package.json
@@ -408,10 +408,10 @@ Panduan deployment lengkap tersedia di [docs/DEPLOYMENT.md](./docs/DEPLOYMENT.md
 
 | Nama | Cohort ID | Peran |
 |---|---|---|
-| Jevan Bernard Kaloko | CFCC014D6Y2425 | Fullstack |
-| Yeremi Kornelius Purba | CFCC014D6Y1957 | Fullstack |
-| Muhammad Syukron Jazila | CACC319D6Y0501 | AI Engineer — Klasifikasi Kategori |
-| Desti Yashfy Silmia | CACC367D6X1576 | AI Engineer — Scoring Urgensi |
+| Jevan Bernard Kaloko | CFCC014D6Y2425 | Fullstack Developer |
+| Yeremi Kornelius Purba | CFCC014D6Y1957 | Fullstack Developer |
+| Muhammad Syukron Jazila | CACC319D6Y0501 | AI Engineer |
+| Desti Yashfy Silmia | CACC367D6X1576 | AI Engineer |
 | Ida Bagus Gede Widiastana Bawaskara | CDCC014D6Y1801 | Data Scientist |
 | Diana Qisthin Thoniyah | CDCC299D6X2345 | Data Scientist |
 
