@@ -4,7 +4,7 @@
 
   <h3>Platform NLP Pengaduan Masyarakat untuk Pemerintah</h3>
   <p>Capstone Project CC26-PSU299 · Tema: Inclusive & Resilient Communities</p>
-  <p>Dicoding — Coding Camp 2026</p>
+  <p>Dicoding - Coding Camp 2026</p>
 
   <br/>
 
