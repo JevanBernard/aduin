@@ -1,14 +1,28 @@
 # ADUIN — Analisis Digital Untuk Insight Nusantara
 
 <div align="center">
+
   <h3>Platform NLP Pengaduan Masyarakat untuk Pemerintah Daerah Bali</h3>
   <p>Capstone Project CC26-PSU299 · Tema: Inclusive & Resilient Communities</p>
+  <p>Dicoding — Coding Camp 2026</p>
 
-  ![React](https://img.shields.io/badge/React-18-61DAFB?logo=react)
-  ![Express](https://img.shields.io/badge/Express-5-000000?logo=express)
-  ![Prisma](https://img.shields.io/badge/Prisma-5.22-2D3748?logo=prisma)
-  ![PostgreSQL](https://img.shields.io/badge/PostgreSQL-Supabase-4169E1?logo=postgresql)
-  ![Deployed](https://img.shields.io/badge/Deployed-Vercel%20%2B%20Railway-black?logo=vercel)
+  <br/>
+
+  ![React](https://img.shields.io/badge/React-18-61DAFB?style=flat&logo=react&logoColor=white)
+  ![Express](https://img.shields.io/badge/Express-5-000000?style=flat&logo=express&logoColor=white)
+  ![Prisma](https://img.shields.io/badge/Prisma-5.22-2D3748?style=flat&logo=prisma&logoColor=white)
+  ![PostgreSQL](https://img.shields.io/badge/PostgreSQL-Supabase-4169E1?style=flat&logo=postgresql&logoColor=white)
+  ![FastAPI](https://img.shields.io/badge/FastAPI-ML_Service-009688?style=flat&logo=fastapi&logoColor=white)
+  ![Vercel](https://img.shields.io/badge/Frontend-Vercel-000000?style=flat&logo=vercel&logoColor=white)
+  ![Railway](https://img.shields.io/badge/Backend-Railway-0B0D0E?style=flat&logo=railway&logoColor=white)
+
+  <br/>
+
+  **🌐 Live Demo:** [aduin.vercel.app](https://aduin.vercel.app)  
+  **📋 Form Lapor:** [aduin.vercel.app/lapor](https://aduin.vercel.app/lapor)  
+  **🔍 Cek Status:** [aduin.vercel.app/cek-status](https://aduin.vercel.app/cek-status)  
+  **🔗 API:** [aduin-production.up.railway.app/api/health](https://aduin-production.up.railway.app/api/health)
+
 </div>
 
 ---
@@ -19,184 +33,185 @@
 - [Fitur Utama](#fitur-utama)
 - [Arsitektur Sistem](#arsitektur-sistem)
 - [Tech Stack](#tech-stack)
-- [Struktur Proyek](#struktur-proyek)
+- [Struktur Repo](#struktur-repo)
 - [Instalasi & Setup Lokal](#instalasi--setup-lokal)
 - [Environment Variables](#environment-variables)
-- [API Endpoints](#api-endpoints)
 - [Model AI](#model-ai)
 - [Deployment](#deployment)
+- [Dokumentasi](#dokumentasi)
 - [Tim Pengembang](#tim-pengembang)
 
 ---
 
 ## Tentang Proyek
 
-ADUIN adalah platform berbasis NLP (Natural Language Processing) yang mengumpulkan, mengklasifikasi, dan memprioritaskan pengaduan masyarakat untuk membantu pemerintah daerah Bali dalam mengambil keputusan berbasis data.
+**ADUIN** adalah platform berbasis NLP (Natural Language Processing) yang dirancang untuk mengatasi permasalahan pengaduan masyarakat di Bali yang selama ini tidak terstruktur, tidak terprioritaskan, dan sulit dipantau oleh pemerintah daerah.
 
-**Masalah yang diselesaikan:**
-- Pengaduan masyarakat yang tidak terstruktur dan tersebar di berbagai kanal
-- Tidak ada sistem prioritisasi otomatis untuk laporan mendesak
+### Masalah yang Diselesaikan
+- Pengaduan masyarakat tersebar di berbagai kanal tanpa sistem terpusat
+- Tidak ada klasifikasi otomatis untuk menentukan jenis dan urgensi masalah
 - Pemerintah kesulitan memantau sebaran masalah secara geografis
-- Tidak ada dashboard terpusat untuk analisis tren pengaduan
+- Tidak ada dashboard analitik untuk pengambilan keputusan berbasis data
 
-**Solusi ADUIN:**
-- Form pengaduan digital yang mudah diakses warga
-- Klasifikasi kategori otomatis menggunakan model ML multilabel
-- Scoring urgensi otomatis (Rendah / Sedang / Tinggi)
-- Heatmap interaktif sebaran laporan per wilayah
-- Dashboard analitik lengkap untuk admin pemerintah
-- Sistem disposisi laporan ke dinas terkait
+### Solusi ADUIN
+- Form pengaduan digital yang mudah diakses seluruh warga Bali
+- Klasifikasi kategori masalah **otomatis** menggunakan model ML multilabel
+- **Priority scoring** otomatis berdasarkan tingkat urgensi laporan
+- **Heatmap interaktif** sebaran laporan per kabupaten/kota
+- Dashboard analitik lengkap dengan tren, distribusi, dan prioritas
+- Sistem disposisi laporan ke dinas terkait dengan riwayat status
 
 ---
 
 ## Fitur Utama
 
-### Untuk Warga
-- **Form Lapor** — Submit pengaduan dengan teks, foto, dan lokasi
-- **Cek Status** — Pantau status laporan menggunakan nomor laporan
-- **Halaman Sukses** — Konfirmasi laporan diterima + download PDF bukti
+### 👥 Untuk Warga
+| Fitur | Deskripsi |
+|---|---|
+| **Form Lapor** | Submit pengaduan dengan teks, foto bukti, dan lokasi detail · [Buka Form →](https://aduin.vercel.app/lapor) |
+| **Cek Status** | Pantau status laporan menggunakan nomor laporan unik · [Cek Status →](https://aduin.vercel.app/cek-status) |
+| **Halaman Sukses** | Konfirmasi laporan diterima + download PDF sebagai bukti |
 
-### Untuk Admin Pemerintah
-- **Dashboard** — Statistik real-time: total laporan, urgensi, tren bulanan
-- **Peta Heatmap** — Visualisasi sebaran masalah per kabupaten/kota di Bali
-- **Manajemen Laporan** — Tabel laporan dengan filter status, kategori, wilayah
-- **Detail Laporan** — AI analysis, foto bukti, disposisi ke dinas, riwayat status
-- **Analisis Tren** — Grafik tren laporan per waktu dengan filter lengkap
-- **Pengaturan** — Kelola kategori, dinas, wilayah, dan kecamatan secara dinamis
-- **Export Data** — Export laporan ke CSV dan PDF
+### 🏛️ Untuk Admin Pemerintah
+| Fitur | Deskripsi |
+|---|---|
+| **Dashboard** | Statistik real-time: total laporan, urgensi, status, tren bulanan |
+| **Peta Heatmap** | Visualisasi interaktif sebaran masalah per wilayah di Bali |
+| **Manajemen Laporan** | Tabel dengan filter status, kategori, wilayah, search, pagination |
+| **Detail Laporan** | AI analysis lengkap, foto bukti, disposisi ke dinas, riwayat status |
+| **Analisis Tren** | Grafik tren laporan per waktu dengan filter multi-dimensi |
+| **Pengaturan** | Kelola kategori, dinas, wilayah, dan kecamatan secara dinamis |
+| **Export Data** | Export laporan ke CSV dan PDF |
+| **Dark Mode** | Toggle antara light dan dark mode |
 
 ---
 
 ## Arsitektur Sistem
 
 ```
-┌─────────────────────────────────────────────────────────────┐
-│                        WARGA                                │
-│              Form Lapor / Cek Status                        │
-└──────────────────────┬──────────────────────────────────────┘
-                       │ HTTP Request
-                       ▼
-┌─────────────────────────────────────────────────────────────┐
-│                   FRONTEND (Vercel)                         │
-│              React 18 + Vite + Tailwind CSS                 │
-│         aduin.vercel.app                                    │
-└──────────────────────┬──────────────────────────────────────┘
-                       │ REST API
-                       ▼
-┌─────────────────────────────────────────────────────────────┐
-│                   BACKEND (Railway)                         │
-│              Express.js + Prisma ORM                        │
-│         aduin-production.up.railway.app                     │
-│                                                             │
-│  ┌──────────────┐  ┌──────────────┐  ┌──────────────────┐  │
-│  │  Auth Routes │  │Report Routes │  │ Dashboard Routes │  │
-│  └──────────────┘  └──────┬───────┘  └──────────────────┘  │
-│                           │ ML Call (parallel)              │
-│              ┌────────────┴────────────┐                    │
-│              ▼                         ▼                    │
-│  ┌───────────────────┐    ┌───────────────────────────┐     │
-│  │  ML Kategori      │    │  ML Urgensi               │     │
-│  │  (Railway)        │    │  (Hugging Face)           │     │
-│  │  Multilabel NLP   │    │  Scoring: R/S/T           │     │
-│  └───────────────────┘    └───────────────────────────┘     │
-└──────────────────────┬──────────────────────────────────────┘
-                       │ Prisma ORM
-                       ▼
-┌─────────────────────────────────────────────────────────────┐
-│                   DATABASE (Supabase)                       │
-│              PostgreSQL — aws-ap-southeast-1                │
-│   Models: User, Report, StatusHistory, Setting, Wilayah    │
-└─────────────────────────────────────────────────────────────┘
+┌─────────────────────────────────────────────────────────────────┐
+│                           WARGA                                 │
+│                  Form Lapor / Cek Status                        │
+└────────────────────────┬────────────────────────────────────────┘
+                         │ HTTPS
+                         ▼
+┌─────────────────────────────────────────────────────────────────┐
+│                    FRONTEND (Vercel)                            │
+│               React 18 + Vite + Tailwind CSS                   │
+│                   aduin.vercel.app                              │
+└────────────────────────┬────────────────────────────────────────┘
+                         │ REST API
+                         ▼
+┌─────────────────────────────────────────────────────────────────┐
+│                    BACKEND (Railway)                            │
+│               Express.js 5 + Prisma ORM 5.22                   │
+│           aduin-production.up.railway.app                       │
+│                                                                 │
+│   ┌─────────────┐ ┌──────────────┐ ┌────────────────────────┐  │
+│   │ Auth Routes │ │Report Routes │ │   Dashboard Routes     │  │
+│   └─────────────┘ └──────┬───────┘ └────────────────────────┘  │
+│                          │ Parallel ML Call                     │
+│             ┌────────────┴────────────┐                         │
+│             ▼                         ▼                         │
+│ ┌─────────────────────┐  ┌──────────────────────────────────┐   │
+│ │   ML Kategori       │  │   ML Urgensi                     │   │
+│ │   FastAPI (Railway) │  │   FastAPI (Hugging Face)         │   │
+│ │   Multilabel NLP    │  │   Scoring: Rendah/Sedang/Tinggi  │   │
+│ └─────────────────────┘  └──────────────────────────────────┘   │
+└────────────────────────┬────────────────────────────────────────┘
+                         │ Prisma ORM
+                         ▼
+┌─────────────────────────────────────────────────────────────────┐
+│                    DATABASE (Supabase)                          │
+│           PostgreSQL — aws-ap-southeast-1 (Singapore)          │
+│    Models: User · Report · StatusHistory · Setting · Wilayah   │
+└─────────────────────────────────────────────────────────────────┘
 ```
 
 ---
 
 ## Tech Stack
 
-| Layer | Teknologi |
-|---|---|
-| Frontend | React 18, Vite, Tailwind CSS, React Router, Recharts, Leaflet |
-| Backend | Express.js 5, Prisma ORM 5.22, JWT, bcryptjs |
-| Database | PostgreSQL via Supabase |
-| ML Kategori | FastAPI + TensorFlow (Railway) |
-| ML Urgensi | FastAPI (Hugging Face Spaces) |
-| Deploy Frontend | Vercel |
-| Deploy Backend | Railway |
-| Deploy Database | Supabase |
+| Layer | Teknologi | Keterangan |
+|---|---|---|
+| **Frontend** | React 18, Vite, Tailwind CSS | UI framework |
+| **Routing** | React Router v6 | Client-side routing |
+| **Charts** | Recharts | Grafik tren dan distribusi |
+| **Map** | Leaflet + React-Leaflet | Heatmap interaktif |
+| **Backend** | Express.js 5 | REST API server |
+| **ORM** | Prisma 5.22 | Database access |
+| **Auth** | JWT + bcryptjs | Autentikasi admin |
+| **Database** | PostgreSQL (Supabase) | Penyimpanan data |
+| **ML Kategori** | FastAPI + TensorFlow | Klasifikasi multilabel |
+| **ML Urgensi** | FastAPI + Docker | Scoring urgensi |
+| **DS Dashboard** | Streamlit | Analitik dataset |
+| **Deploy FE** | Vercel | Hosting frontend |
+| **Deploy BE** | Railway | Hosting backend |
+| **Deploy DB** | Supabase | Managed PostgreSQL |
 
 ---
 
-## Struktur Proyek
+## Struktur Repo
 
 ```
 aduin-repo/
-├── frontend/                    # React + Vite
+├── frontend/                        # React + Vite (Vercel)
 │   ├── src/
-│   │   ├── assets/icons/        # SVG icons
+│   │   ├── assets/icons/            # SVG icons
 │   │   ├── components/
-│   │   │   ├── admin/           # Komponen dashboard admin
-│   │   │   │   ├── DashboardStats.jsx
-│   │   │   │   ├── HeatmapMap.jsx
-│   │   │   │   ├── HeatmapPanel.jsx
-│   │   │   │   ├── HeatmapPeta.jsx
-│   │   │   │   ├── LaporanTable.jsx
-│   │   │   │   ├── PriorityBoard.jsx
-│   │   │   │   └── TrendChart.jsx
-│   │   │   ├── common/          # Komponen shared
-│   │   │   │   ├── Header.jsx
-│   │   │   │   └── Sidebar.jsx
-│   │   │   └── warga/           # Komponen form warga
-│   │   │       └── FormLaporan.jsx
-│   │   ├── context/
-│   │   │   └── ThemeContext.jsx  # Dark/light mode
-│   │   ├── data/                # Mock data & constants
-│   │   ├── hooks/               # Custom hooks
-│   │   │   ├── useHeatmap.js
-│   │   │   ├── useSettings.js
-│   │   │   └── useWilayahOptions.js
-│   │   ├── pages/               # Halaman utama
-│   │   │   ├── DashboardPage.jsx
-│   │   │   ├── PetaPage.jsx
-│   │   │   ├── LaporanPage.jsx
-│   │   │   ├── LaporanDetailPage.jsx
-│   │   │   ├── TrendPage.jsx
-│   │   │   ├── SettingsPage.jsx
-│   │   │   ├── LoginPage.jsx
-│   │   │   ├── FormPage.jsx
-│   │   │   ├── SuccessPage.jsx
-│   │   │   └── CekStatusPage.jsx
-│   │   ├── services/
-│   │   │   └── api.js           # API client
-│   │   └── App.jsx
+│   │   │   ├── admin/               # Komponen dashboard admin
+│   │   │   ├── common/              # Header, Sidebar
+│   │   │   └── warga/               # Form laporan warga
+│   │   ├── context/                 # ThemeContext (dark/light)
+│   │   ├── data/                    # Mock data & constants
+│   │   ├── hooks/                   # Custom hooks
+│   │   ├── pages/                   # Halaman utama
+│   │   └── services/api.js          # API client
 │   ├── public/
 │   ├── vercel.json
 │   └── package.json
 │
-├── backend/                     # Express.js + Prisma
+├── backend/                         # Express.js + Prisma (Railway)
 │   ├── src/
-│   │   ├── config/
-│   │   │   └── database.js      # Prisma singleton
-│   │   ├── controllers/
-│   │   │   ├── authController.js
-│   │   │   ├── reportController.js
-│   │   │   ├── dashboardController.js
-│   │   │   └── settingsController.js
-│   │   ├── middleware/
-│   │   │   ├── auth.js          # JWT middleware
-│   │   │   └── errorHandler.js
-│   │   └── routes/
-│   │       ├── authRoutes.js
-│   │       ├── reportRoutes.js
-│   │       ├── dashboardRoutes.js
-│   │       ├── settingsRoutes.js
-│   │       └── wilayahRoutes.js
-│   ├── prisma/
-│   │   └── schema.prisma
-│   ├── seed.js                  # Seed users + wilayah
-│   ├── seedWilayah.js           # Seed 9 kabupaten Bali + kecamatan
-│   ├── seedLaporan.js           # Seed 30 laporan sample
+│   │   ├── config/database.js       # Prisma singleton
+│   │   ├── controllers/             # Business logic
+│   │   ├── middleware/              # Auth + error handler
+│   │   └── routes/                  # API routes
+│   ├── prisma/schema.prisma         # Database schema
+│   ├── seed.js                      # Seed users + wilayah dasar
+│   ├── seedWilayah.js               # Seed 9 kab/kota Bali + kecamatan
+│   ├── seedLaporan.js               # Seed 30 laporan sample
 │   ├── server.js
 │   └── package.json
+│
+├── ml-service-kategori/             # AI — Klasifikasi Kategori Multilabel
+│   ├── app/                         # FastAPI application
+│   ├── model/                       # Model TensorFlow tersimpan
+│   ├── requirements.txt
+│   ├── runtime.txt
+│   ├── railpack.json                # Railway deployment config
+│   └── readme.md
+│
+├── ml-service-urgensi/              # AI — Scoring Urgensi
+│   ├── model/                       # Model tersimpan
+│   ├── main.py                      # FastAPI app
+│   ├── Dockerfile                   # Docker config (Hugging Face)
+│   ├── requirements.txt
+│   └── README.md
+│
+├── ds-dataset/                      # Data Science — Dataset & Analitik
+│   ├── data/                        # Dataset laporan masyarakat
+│   ├── notebooks/                   # Jupyter notebooks analisis
+│   ├── app.py                       # Streamlit dashboard
+│   ├── Data_Dictionary_ADUIN.md     # Kamus data dataset
+│   ├── requirements.txt
+│   └── README.md
+│
+├── docs/
+│   ├── API_DOCS.md                  # Dokumentasi endpoint API
+│   ├── DATA_DICTIONARY.md           # Struktur database
+│   ├── DEPLOYMENT.md                # Panduan deployment
+│   └── PROJECT_PLAN.md              # Rencana & progress proyek
 │
 └── README.md
 ```
@@ -208,7 +223,8 @@ aduin-repo/
 ### Prerequisites
 - Node.js >= 18
 - npm >= 9
-- Akun Supabase (untuk database)
+- Python >= 3.9 (untuk ML service)
+- Akun Supabase
 
 ### 1. Clone Repository
 
@@ -224,32 +240,27 @@ cd backend
 npm install
 ```
 
-Buat file `.env`:
+Buat file `backend/.env`:
 ```env
-DATABASE_URL="postgresql://postgres.[ref]:[PASSWORD]@[host]:5432/postgres"
+DATABASE_URL="postgresql://postgres.[ref]:[PASSWORD]@aws-1-ap-southeast-1.pooler.supabase.com:6543/postgres"
 JWT_SECRET="aduin-secret-key-production-2026"
 NODE_ENV=development
 PORT=3000
 ```
 
-Push schema ke database:
+Push schema dan seed data:
 ```bash
 npx prisma db push
 npx prisma generate
-```
-
-Seed data awal:
-```bash
-node seed.js          # Users + wilayah dasar
-node seedWilayah.js   # 9 kabupaten Bali + kecamatan
-node seedLaporan.js   # 30 laporan sample
+node seed.js
+node seedWilayah.js
+node seedLaporan.js
 ```
 
 Jalankan backend:
 ```bash
-npm run dev
-# atau
 node server.js
+# Server berjalan di http://localhost:3000
 ```
 
 ### 3. Setup Frontend
@@ -259,7 +270,7 @@ cd frontend
 npm install
 ```
 
-Buat file `.env`:
+Buat file `frontend/.env`:
 ```env
 VITE_API_URL=http://localhost:3000/api
 ```
@@ -267,9 +278,39 @@ VITE_API_URL=http://localhost:3000/api
 Jalankan frontend:
 ```bash
 npm run dev
+# Buka http://localhost:5173
 ```
 
-Buka `http://localhost:5173`
+### 4. Setup ML Service Kategori (Opsional)
+
+```bash
+cd ml-service-kategori
+pip install -r requirements.txt
+uvicorn app.main:app --reload --port 8000
+```
+
+### 5. Setup ML Service Urgensi (Opsional)
+
+```bash
+cd ml-service-urgensi
+pip install -r requirements.txt
+uvicorn main:app --reload --port 8001
+```
+
+### 6. Setup DS Dashboard (Opsional)
+
+```bash
+cd ds-dataset
+pip install -r requirements.txt
+streamlit run app.py
+```
+
+### 7. Kredensial Login
+
+```
+Super Admin : admin@aduin.go.id    / admin123
+Operator    : operator@aduin.go.id / operator123
+```
 
 ---
 
@@ -277,155 +318,106 @@ Buka `http://localhost:5173`
 
 ### Backend
 
-| Variable | Deskripsi | Contoh |
-|---|---|---|
-| `DATABASE_URL` | Connection string Supabase (pooler) | `postgresql://postgres.[ref]:pass@host:5432/postgres` |
-| `JWT_SECRET` | Secret key untuk JWT token | `aduin-secret-key-production-2026` |
-| `NODE_ENV` | Environment | `production` atau `development` |
-| `PORT` | Port server | `3000` |
+| Variable | Deskripsi |
+|---|---|
+| `DATABASE_URL` | Connection string Supabase Transaction Pooler (port 6543) |
+| `JWT_SECRET` | Secret key untuk JWT token |
+| `NODE_ENV` | `production` atau `development` |
+| `PORT` | Port server (default: 3000) |
 
 ### Frontend
 
-| Variable | Deskripsi | Contoh |
-|---|---|---|
-| `VITE_API_URL` | URL backend API | `https://aduin-production.up.railway.app/api` |
-
----
-
-## API Endpoints
-
-### Auth
-| Method | Endpoint | Deskripsi |
-|---|---|---|
-| POST | `/api/auth/login` | Login admin |
-| GET | `/api/auth/me` | Get current user |
-
-### Reports
-| Method | Endpoint | Deskripsi |
-|---|---|---|
-| GET | `/api/reports` | List laporan (dengan filter & pagination) |
-| POST | `/api/reports` | Buat laporan baru (trigger ML) |
-| GET | `/api/reports/:id` | Detail laporan by ID |
-| GET | `/api/reports/by-number/:reportNumber` | Detail by nomor laporan |
-| GET | `/api/reports/track/:reportNumber` | Track status (public) |
-| PUT | `/api/reports/:id/status` | Update status laporan |
-| DELETE | `/api/reports/:id` | Hapus laporan |
-
-### Dashboard
-| Method | Endpoint | Deskripsi |
-|---|---|---|
-| GET | `/api/dashboard/stats` | Statistik ringkasan |
-| GET | `/api/dashboard/heatmap` | Data heatmap per wilayah |
-| GET | `/api/dashboard/heatmap/:kabupaten` | Detail wilayah |
-| GET | `/api/dashboard/priorities` | Top 5 laporan prioritas |
-| GET | `/api/dashboard/trends` | Tren laporan per waktu |
-| GET | `/api/dashboard/distribusi` | Distribusi kategori |
-| GET | `/api/dashboard/top-wilayah` | Top wilayah keluhan |
-| GET | `/api/dashboard/trends-bulanan` | Tren 7 bulan terakhir |
-
-### Settings
-| Method | Endpoint | Deskripsi |
-|---|---|---|
-| GET | `/api/settings/kategori` | Get kategori laporan |
-| PUT | `/api/settings/kategori` | Update kategori |
-| GET | `/api/settings/dinas` | Get daftar dinas |
-| PUT | `/api/settings/dinas` | Update dinas |
-
-### Wilayah
-| Method | Endpoint | Deskripsi |
-|---|---|---|
-| GET | `/api/wilayah` | List wilayah (auth) |
-| GET | `/api/wilayah/public` | List wilayah (public) |
-| POST | `/api/wilayah` | Tambah wilayah |
-| PUT | `/api/wilayah/:id` | Update wilayah + kecamatan |
-| DELETE | `/api/wilayah/:id` | Hapus wilayah |
+| Variable | Deskripsi |
+|---|---|
+| `VITE_API_URL` | URL backend API (harus diawali `https://`) |
 
 ---
 
 ## Model AI
 
-### 1. Klasifikasi Kategori (Multilabel)
+### Klasifikasi Kategori (Multilabel)
+Mengklasifikasikan teks laporan ke satu atau lebih kategori secara otomatis menggunakan TensorFlow.
+
+- **Repo:** [keluhan-multilabel-classification-api](https://github.com/syukronJazila/keluhan-multilabel-classification-api)
+- **Deploy:** Railway
 - **URL:** `https://keluhan-multilabel-classification-api-production.up.railway.app/predict`
-- **Input:** `{ "text": "teks keluhan" }`
-- **Output:** `{ "success": true, "predictions": [{ "label": "Infrastruktur", "probability": 0.92 }] }`
 - **Kategori:** Infrastruktur, Lingkungan, Air & Sanitasi, Bencana, Transportasi, Pelayanan Publik, Ekonomi, Keamanan, Pendidikan, Kesehatan
 
-### 2. Scoring Urgensi
-- **URL:** `https://destiys-urgensi-keluhan-api.hf.space/predict`
-- **Input:** `{ "text": "teks keluhan" }`
-- **Output:** `{ "status_code": 200, "kategori": "Tinggi", "raw_probabilities": { "rendah": 0.1, "sedang": 0.2, "tinggi": 0.7 } }`
-- **Level:** Rendah / Sedang / Tinggi
+```json
+// Request
+{ "text": "Jalan di Sesetan banyak lubang besar" }
 
-Kedua model dipanggil secara **paralel** saat laporan baru masuk. Kegagalan ML tidak membatalkan penyimpanan laporan.
+// Response
+{
+  "success": true,
+  "predictions": [
+    { "label": "Infrastruktur", "probability": 0.92 }
+  ]
+}
+```
+
+### Scoring Urgensi
+Menentukan tingkat urgensi laporan: Rendah, Sedang, atau Tinggi menggunakan FastAPI + Docker.
+
+- **Repo:** [aduin-urgency-api](https://github.com/destiys/aduin-urgency-api)
+- **Deploy:** Hugging Face Spaces
+- **URL:** `https://destiys-urgensi-keluhan-api.hf.space/predict`
+
+```json
+// Request
+{ "text": "Jalan di Sesetan banyak lubang besar" }
+
+// Response
+{
+  "status_code": 200,
+  "kategori": "Tinggi",
+  "raw_probabilities": { "rendah": 0.05, "sedang": 0.15, "tinggi": 0.80 }
+}
+```
+
+> Kedua model dipanggil secara **paralel** saat laporan baru masuk. Kegagalan ML tidak membatalkan penyimpanan laporan.
 
 ---
 
 ## Deployment
 
-### Frontend → Vercel
-```
-URL: https://aduin.vercel.app
-Build Command: npm run build
-Output Directory: dist
-Root Directory: frontend
-```
+| Service | Platform | URL |
+|---|---|---|
+| Frontend | Vercel | https://aduin.vercel.app |
+| Backend | Railway | https://aduin-production.up.railway.app |
+| Database | Supabase | aws-ap-southeast-1 |
+| ML Kategori | Railway | keluhan-multilabel-classification-api-production.up.railway.app |
+| ML Urgensi | Hugging Face | destiys-urgensi-keluhan-api.hf.space |
 
-Environment variables di Vercel:
-```
-VITE_API_URL = https://aduin-production.up.railway.app/api
-```
-
-### Backend → Railway
-```
-URL: https://aduin-production.up.railway.app
-Build Command: npx prisma generate
-Start Command: node server.js
-Root Directory: backend
-```
-
-Environment variables di Railway:
-```
-DATABASE_URL  = postgresql://postgres.[ref]:[pass]@host:6543/postgres?pgbouncer=true&connection_limit=1
-JWT_SECRET    = aduin-secret-key-production-2026
-NODE_ENV      = production
-PORT          = 3000
-```
-
-### Database → Supabase
-- Region: ap-southeast-1 (Singapore)
-- Connection: Transaction Pooler port 6543
-- Schema: push via `npx prisma db push` dari lokal
+Panduan deployment lengkap tersedia di [docs/DEPLOYMENT.md](./docs/DEPLOYMENT.md).
 
 ---
 
-## Kredensial Demo
+## Dokumentasi
 
-```
-Super Admin : admin@aduin.go.id    / admin123
-Operator    : operator@aduin.go.id / operator123
-```
-
-> Hapus kredensial ini sebelum production deployment.
+| Dokumen | Deskripsi |
+|---|---|
+| [docs/API_DOCS.md](./docs/API_DOCS.md) | Dokumentasi lengkap semua endpoint API |
+| [docs/DATA_DICTIONARY.md](./docs/DATA_DICTIONARY.md) | Struktur database dan relasi antar tabel |
+| [docs/DEPLOYMENT.md](./docs/DEPLOYMENT.md) | Panduan step-by-step deployment |
+| [docs/PROJECT_PLAN.md](./docs/PROJECT_PLAN.md) | Rencana proyek, progress, dan pembagian tugas |
 
 ---
 
 ## Tim Pengembang
 
-| Nama | Peran |
-|---|---|
-| Jevan Bernard | Fullstack Developer |
-| Yeremi | Fullstack Developer |
-| Syukron | AI Engineer (Klasifikasi Kategori) |
-| Desti | AI Engineer (Scoring Urgensi) |
-| Ida Bagus | Data Scientist |
-| Diana | Data Scientist |
-
-**Capstone:** CC26-PSU299  
-**Tema:** Inclusive & Resilient Communities  
-**Institusi:** Dicoding — Coding Camp 2026
+| Nama | Cohort ID | Peran |
+|---|---|---|
+| Jevan Bernard Kaloko | CFCC014D6Y2425 | Fullstack |
+| Yeremi Kornelius Purba | CFCC014D6Y1957 | Fullstack |
+| Muhammad Syukron Jazila | CACC319D6Y0501 | AI Engineer — Klasifikasi Kategori |
+| Desti Yashfy Silmia | CACC367D6X1576 | AI Engineer — Scoring Urgensi |
+| Ida Bagus Gede Widiastana Bawaskara | CDCC014D6Y1801 | Data Scientist |
+| Diana Qisthin Thoniyah | CDCC299D6X2345 | Data Scientist |
 
 ---
 
 ## Lisensi
 
-Proyek ini dibuat untuk keperluan capstone project Dicoding Coding Camp 2026.
+Proyek ini dibuat untuk keperluan Capstone Project Dicoding Coding Camp 2026 (CC26-PSU299).  
+© 2026 Tim CC26-PSU299 — All rights reserved.
