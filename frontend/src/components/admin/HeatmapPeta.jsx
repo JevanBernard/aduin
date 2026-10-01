@@ -60,9 +60,7 @@ export default function HeatmapPeta({ period }) {
       .finally(() => setLoading(false));
   }, [period]);
 
-  const tileUrl = dark
-    ? "https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}{r}.png"
-    : "https://{s}.basemaps.cartocdn.com/light_all/{z}/{x}/{y}{r}.png";
+  const tileUrl = "https://tile.openstreetmap.org/{z}/{x}/{y}.png";
 
   return (
     <section
@@ -106,8 +104,10 @@ export default function HeatmapPeta({ period }) {
         >
           <ZoomControl position="topright" />
           <TileLayer
+            key={dark ? "dark" : "light"}
             url={tileUrl}
-            attribution='&copy; <a href="https://carto.com/">CARTO</a> &copy; <a href="https://www.openstreetmap.org/copyright">OSM</a>'
+            attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
+            className={dark ? "tiles-dark" : ""}
           />
           {wilayahList.length > 0 && <FitBounds data={wilayahList} />}
 

@@ -30,10 +30,8 @@ export default function HeatmapMap({
 }) {
   const { dark } = useTheme();
 
-  const tileUrl = dark
-    ? "https://{s}.basemaps.cartocdn.com/dark_nolabels/{z}/{x}/{y}{r}.png"
-    : "https://{s}.basemaps.cartocdn.com/light_all/{z}/{x}/{y}{r}.png";
-  const tileAttribution = '&copy; <a href="https://carto.com/">CARTO</a> &copy; <a href="https://www.openstreetmap.org/copyright">OSM</a>';
+  const tileUrl = "https://tile.openstreetmap.org/{z}/{x}/{y}.png";
+  const tileAttribution = '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors';
 
   return (
     <section className="flex-1 relative overflow-hidden flex flex-col"
@@ -96,7 +94,7 @@ export default function HeatmapMap({
           scrollWheelZoom={true}
         >
           <ZoomControl position="topright" />
-          <TileLayer url={tileUrl} attribution={tileAttribution} />
+          <TileLayer key={dark ? "dark" : "light"} url={tileUrl} attribution={tileAttribution} className={dark ? "tiles-dark" : ""} />
           <FitBounds data={data} />
 
           {data.map((kab, i) => {

@@ -41,3 +41,8 @@ body {
 .leaflet-bottom {
   z-index: 1 !important;
 }
+
+/* Mode gelap untuk tile OSM: balik warna lalu putar hue agar air tetap kebiruan */
+.tiles-dark {
+  filter: invert(1) hue-rotate(180deg) brightness(0.9) contrast(0.9);
+}
