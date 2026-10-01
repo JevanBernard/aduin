@@ -4,7 +4,7 @@ import { KATEGORI_FILTER, URGENSI_FILTER } from "../../data/heatmapData";
 import { Fragment } from "react";
 import { MapContainer, TileLayer, CircleMarker, Tooltip, ZoomControl, useMap } from "react-leaflet";
 import "leaflet/dist/leaflet.css";
-import { TILE } from "../../utils/mapTiles";
+import { TILES } from "../../utils/mapTiles";
 
 // Component untuk update view saat data berubah
 function FitBounds({ data }) {
@@ -30,6 +30,7 @@ export default function HeatmapMap({
   kategoriFilter,
 }) {
   const { dark } = useTheme();
+  const tiles = dark ? TILES.dark : TILES.light;
 
 
   return (
@@ -93,7 +94,8 @@ export default function HeatmapMap({
           scrollWheelZoom={true}
         >
           <ZoomControl position="topright" />
-          <TileLayer key={dark ? "dark" : "light"} url={TILE.url} attribution={TILE.attribution} className={dark ? "tiles-dark" : ""} />
+          <TileLayer key={`base-${dark}`} url={tiles.base} attribution={tiles.attribution} maxNativeZoom={16} maxZoom={18} />
+          <TileLayer key={`labels-${dark}`} url={tiles.labels} maxNativeZoom={16} maxZoom={18} />
           <FitBounds data={data} />
 
           {data.map((kab, i) => {

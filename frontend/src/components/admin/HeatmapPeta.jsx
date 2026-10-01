@@ -1,7 +1,7 @@
 import { Fragment, useEffect, useState } from "react";
 import { MapContainer, TileLayer, CircleMarker, Tooltip, ZoomControl, useMap } from "react-leaflet";
 import "leaflet/dist/leaflet.css";
-import { TILE } from "../../utils/mapTiles";
+import { TILES } from "../../utils/mapTiles";
 import { useTheme } from "../../context/ThemeContext";
 import { getHeatmapData } from "../../services/api";
 
@@ -31,6 +31,7 @@ function FitBounds({ data }) {
 
 export default function HeatmapPeta({ period }) {
   const { dark } = useTheme();
+  const tiles = dark ? TILES.dark : TILES.light;
   const [wilayahList, setWilayahList] = useState([]);
   const [loading, setLoading] = useState(true);
 
@@ -103,12 +104,8 @@ export default function HeatmapPeta({ period }) {
           scrollWheelZoom={false}
         >
           <ZoomControl position="topright" />
-          <TileLayer
-            key={dark ? "dark" : "light"}
-            url={TILE.url}
-            attribution={TILE.attribution}
-            className={dark ? "tiles-dark" : ""}
-          />
+          <TileLayer key={`base-${dark}`} url={tiles.base} attribution={tiles.attribution} maxNativeZoom={16} maxZoom={18} />
+          <TileLayer key={`labels-${dark}`} url={tiles.labels} maxNativeZoom={16} maxZoom={18} />
           {wilayahList.length > 0 && <FitBounds data={wilayahList} />}
 
           {wilayahList.map((kab, i) => (
