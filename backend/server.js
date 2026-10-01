@@ -15,7 +15,8 @@ const PORT = process.env.PORT || 3000;
 const allowedOrigins = [
   "http://localhost:5173",
   "http://localhost:3000",
-  "https://aduin.vercel.app", // ← ganti dengan URL Vercel frontend kamu
+  "https://aduin.vercel.app",
+  ...(process.env.CORS_ORIGINS ? process.env.CORS_ORIGINS.split(",").map((o) => o.trim()) : []),
 ];
 
 app.use(cors({
@@ -44,6 +45,11 @@ app.get("/api/health", (req, res) => {
 
 app.use(errorHandler);
 
-app.listen(PORT, () => {
-  console.log(`ADUIN Backend running on port ${PORT}`);
-});
+// Vercel mengimpor app sebagai serverless function; listen hanya untuk lokal
+if (require.main === module) {
+  app.listen(PORT, () => {
+    console.log(`ADUIN Backend running on port ${PORT}`);
+  });
+}
+
+module.exports = app;

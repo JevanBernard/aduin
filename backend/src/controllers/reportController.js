@@ -1,6 +1,9 @@
 const prisma = require("../config/database");
 const generateReportId = require("../utils/generateReportId");
 
+// Batas durasi function Vercel pendek; jangan tunggu ML service yang sedang cold start
+const ML_TIMEOUT_MS = Number(process.env.ML_TIMEOUT_MS) || 8000;
+
 // GET /api/reports
 async function getReports(req, res, next) {
   try {
@@ -189,17 +192,19 @@ async function createReport(req, res, next) {
     try {
       const [kategoriRes, urgensiRes] = await Promise.allSettled([
         // API 1: Klasifikasi Kategori (Syukron)
-        fetch("https://keluhan-multilabel-classification-api-production.up.railway.app/predict", {
+        fetch(`${process.env.ML_KATEGORI_URL || "https://keluhan-multilabel-classification-api-production.up.railway.app"}/predict`, {
           method: "POST",
           headers: { "Content-Type": "application/json" },
           body: JSON.stringify({ text }),
+          signal: AbortSignal.timeout(ML_TIMEOUT_MS),
         }).then((r) => r.json()),
 
         // API 2: Klasifikasi Urgensi (Desti)
-        fetch("https://destiys-urgensi-keluhan-api.hf.space/predict", {
+        fetch(`${process.env.ML_URGENSI_URL || "https://destiys-urgensi-keluhan-api.hf.space"}/predict`, {
           method: "POST",
           headers: { "Content-Type": "application/json" },
           body: JSON.stringify({ teks_keluhan: text }),
+          signal: AbortSignal.timeout(ML_TIMEOUT_MS),
         }).then((r) => r.json()),
       ]);
 

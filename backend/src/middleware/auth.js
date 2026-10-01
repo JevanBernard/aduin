@@ -1,9 +1,6 @@
 const jwt = require("jsonwebtoken");
 
 function authMiddleware(req, res, next) {
-  console.log("ALL HEADERS:", req.headers);
-  console.log("AUTH HEADER:", req.headers.authorization);
-  
   const authHeader = req.headers.authorization;
   if (!authHeader || !authHeader.startsWith("Bearer ")) {
     return res.status(401).json({ success: false, message: "Token tidak ditemukan" });
