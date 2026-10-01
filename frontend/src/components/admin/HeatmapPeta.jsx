@@ -1,6 +1,7 @@
 import { Fragment, useEffect, useState } from "react";
 import { MapContainer, TileLayer, CircleMarker, Tooltip, ZoomControl, useMap } from "react-leaflet";
 import "leaflet/dist/leaflet.css";
+import { TILE } from "../../utils/mapTiles";
 import { useTheme } from "../../context/ThemeContext";
 import { getHeatmapData } from "../../services/api";
 
@@ -60,7 +61,6 @@ export default function HeatmapPeta({ period }) {
       .finally(() => setLoading(false));
   }, [period]);
 
-  const tileUrl = "https://tile.openstreetmap.org/{z}/{x}/{y}.png";
 
   return (
     <section
@@ -105,8 +105,8 @@ export default function HeatmapPeta({ period }) {
           <ZoomControl position="topright" />
           <TileLayer
             key={dark ? "dark" : "light"}
-            url={tileUrl}
-            attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
+            url={TILE.url}
+            attribution={TILE.attribution}
             className={dark ? "tiles-dark" : ""}
           />
           {wilayahList.length > 0 && <FitBounds data={wilayahList} />}

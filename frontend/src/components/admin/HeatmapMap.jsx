@@ -4,6 +4,7 @@ import { KATEGORI_FILTER, URGENSI_FILTER } from "../../data/heatmapData";
 import { Fragment } from "react";
 import { MapContainer, TileLayer, CircleMarker, Tooltip, ZoomControl, useMap } from "react-leaflet";
 import "leaflet/dist/leaflet.css";
+import { TILE } from "../../utils/mapTiles";
 
 // Component untuk update view saat data berubah
 function FitBounds({ data }) {
@@ -30,8 +31,6 @@ export default function HeatmapMap({
 }) {
   const { dark } = useTheme();
 
-  const tileUrl = "https://tile.openstreetmap.org/{z}/{x}/{y}.png";
-  const tileAttribution = '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors';
 
   return (
     <section className="flex-1 relative overflow-hidden flex flex-col"
@@ -94,7 +93,7 @@ export default function HeatmapMap({
           scrollWheelZoom={true}
         >
           <ZoomControl position="topright" />
-          <TileLayer key={dark ? "dark" : "light"} url={tileUrl} attribution={tileAttribution} className={dark ? "tiles-dark" : ""} />
+          <TileLayer key={dark ? "dark" : "light"} url={TILE.url} attribution={TILE.attribution} className={dark ? "tiles-dark" : ""} />
           <FitBounds data={data} />
 
           {data.map((kab, i) => {
