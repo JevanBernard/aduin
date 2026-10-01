@@ -1,15 +1,20 @@
+import { useEffect } from "react";
 import { useTheme } from "../../context/ThemeContext";
 import { KATEGORI_FILTER, URGENSI_FILTER } from "../../data/heatmapData";
+import { Fragment } from "react";
 import { MapContainer, TileLayer, CircleMarker, Tooltip, ZoomControl, useMap } from "react-leaflet";
 import "leaflet/dist/leaflet.css";
 
 // Component untuk update view saat data berubah
 function FitBounds({ data }) {
   const map = useMap();
-  if (data.length > 0) {
-    const bounds = data.map((d) => [d.lat, d.lng]);
-    map.fitBounds(bounds, { padding: [50, 50], maxZoom: 11 });
-  }
+  // Efek, bukan saat render: kalau tidak, peta ter-reset tiap klik/filter
+  useEffect(() => {
+    if (data.length > 0) {
+      const bounds = data.map((d) => [d.lat, d.lng]);
+      map.fitBounds(bounds, { padding: [50, 50], maxZoom: 11 });
+    }
+  }, [data, map]);
   return null;
 }
 
@@ -100,7 +105,7 @@ export default function HeatmapMap({
             const glowColor = parseColor(kab.color, kab.opacity * 0.3);
 
             return (
-              <div key={`${kab.name}-${i}`}>
+              <Fragment key={`${kab.name}-${i}`}>
                 <CircleMarker
                   center={[kab.lat, kab.lng]}
                   radius={kab.size * 0.9}
@@ -129,7 +134,7 @@ export default function HeatmapMap({
                     </div>
                   </Tooltip>
                 </CircleMarker>
-              </div>
+              </Fragment>
             );
           })}
         </MapContainer>

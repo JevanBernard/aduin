@@ -2,6 +2,7 @@ const prisma = require("../config/database");
 const generateReportId = require("../utils/generateReportId");
 
 // Batas durasi function Vercel pendek; jangan tunggu ML service yang sedang cold start
+const VALID_STATUSES = ["DITERIMA", "DIANALISIS", "DIDISPOSISI", "DITINDAKLANJUTI", "SELESAI"];
 const ML_TIMEOUT_MS = Number(process.env.ML_TIMEOUT_MS) || 8000;
 
 // GET /api/reports
@@ -176,8 +177,6 @@ async function createReport(req, res, next) {
       });
     }
 
-    const reportNumber = generateReportId();
-
     // Lookup koordinat dari DB
     const wilayah = await prisma.wilayah.findUnique({
       where: { nama: kabupatenKota },
@@ -256,9 +255,7 @@ async function createReport(req, res, next) {
     }
     // ============ END ML SERVICE ============
 
-    const report = await prisma.report.create({
-      data: {
-        reportNumber,
+    const data = {
         text,
         reporterName: reporterName || null,
         kabupatenKota,
@@ -279,8 +276,18 @@ async function createReport(req, res, next) {
             changedBy: null,
           },
         },
-      },
-    });
+    };
+
+    // Nomor laporan acak; ulangi bila bentrok dengan nomor yang sudah ada (unique)
+    let report;
+    for (let attempt = 0; attempt < 5; attempt++) {
+      try {
+        report = await prisma.report.create({ data: { ...data, reportNumber: generateReportId() } });
+        break;
+      } catch (err) {
+        if (err.code !== "P2002" || attempt === 4) throw err;
+      }
+    }
 
     res.status(201).json({
       success: true,
@@ -298,10 +305,21 @@ async function updateReportStatus(req, res, next) {
     const { status, disposisiDinas, catatanAdmin } = req.body;
     const { id } = req.params;
 
+    if (status && !VALID_STATUSES.includes(status)) {
+      return res.status(400).json({
+        success: false,
+        message: `Status tidak valid. Pilihan: ${VALID_STATUSES.join(", ")}`,
+      });
+    }
+
     const existing = await prisma.report.findUnique({ where: { id } });
     if (!existing) {
       return res.status(404).json({ success: false, message: "Laporan tidak ditemukan" });
     }
+
+    // Catat riwayat hanya bila status berubah atau ada catatan baru
+    const statusChanged = status && status !== existing.status;
+    const hasNote = Boolean(catatanAdmin);
 
     const report = await prisma.report.update({
       where: { id },
@@ -309,13 +327,15 @@ async function updateReportStatus(req, res, next) {
         ...(status && { status }),
         ...(disposisiDinas !== undefined && { disposisiDinas }),
         ...(catatanAdmin !== undefined && { catatanAdmin }),
-        statusHistories: {
-          create: {
-            status: status || existing.status,
-            note: catatanAdmin || null,
-            changedBy: req.user?.id || null,
+        ...((statusChanged || hasNote) && {
+          statusHistories: {
+            create: {
+              status: status || existing.status,
+              note: catatanAdmin || null,
+              changedBy: req.user?.id || null,
+            },
           },
-        },
+        }),
       },
       include: {
         statusHistories: { orderBy: { createdAt: "asc" } },

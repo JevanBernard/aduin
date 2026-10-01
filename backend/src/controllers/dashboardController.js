@@ -36,17 +36,12 @@ async function getStats(req, res, next) {
       if (startDate) dateFilter = { createdAt: { gte: startDate } };
     }
 
-    const [total, urgent, belum, proses, selesai, kategoriGroup] = await Promise.all([
+    const [total, urgent, belum, proses, selesai] = await Promise.all([
       prisma.report.count({ where: dateFilter }),
       prisma.report.count({ where: { ...dateFilter, urgensi: "tinggi" } }),
       prisma.report.count({ where: { ...dateFilter, status: "DITERIMA" } }),
       prisma.report.count({ where: { ...dateFilter, status: { in: ["DIANALISIS", "DIDISPOSISI", "DITINDAKLANJUTI"] } } }),
       prisma.report.count({ where: { ...dateFilter, status: "SELESAI" } }),
-      prisma.report.groupBy({
-        by: ["categories"],
-        where: dateFilter,
-        _count: true,
-      }),
     ]);
 
     // Hitung kategori terbanyak

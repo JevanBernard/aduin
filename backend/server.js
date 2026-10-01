@@ -12,6 +12,9 @@ const errorHandler = require("./src/middleware/errorHandler");
 const app = express();
 const PORT = process.env.PORT || 3000;
 
+// Di belakang proxy Vercel: ambil IP klien dari X-Forwarded-For (dipakai rate limiter)
+app.set("trust proxy", 1);
+
 const allowedOrigins = [
   "http://localhost:5173",
   "http://localhost:3000",

@@ -5,7 +5,7 @@ import { ThemeToggle, ProfileDropdown } from "../components/common/Header";
 import { getKategoriSettings, updateKategoriSettings, getDinasSettings, updateDinasSettings } from "../services/api";
 import { resetSettingsCache } from "../hooks/useSettings";
 
-const API_URL = import.meta.env.VITE_API_URL || "https://aduin-production.up.railway.app/api";
+import { API_URL } from "../utils/apiUrl";
 
 const TABS = [
   { key: "umum", label: "Umum" },

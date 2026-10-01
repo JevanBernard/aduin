@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { Fragment, useEffect, useState } from "react";
 import { MapContainer, TileLayer, CircleMarker, Tooltip, ZoomControl, useMap } from "react-leaflet";
 import "leaflet/dist/leaflet.css";
 import { useTheme } from "../../context/ThemeContext";
@@ -107,12 +107,12 @@ export default function HeatmapPeta({ period }) {
           <ZoomControl position="topright" />
           <TileLayer
             url={tileUrl}
-            attribution='&copy; <a href="https://carto.com/">CARTO</a>'
+            attribution='&copy; <a href="https://carto.com/">CARTO</a> &copy; <a href="https://www.openstreetmap.org/copyright">OSM</a>'
           />
           {wilayahList.length > 0 && <FitBounds data={wilayahList} />}
 
           {wilayahList.map((kab, i) => (
-            <div key={i}>
+            <Fragment key={i}>
               {/* Outer glow */}
               <CircleMarker
                 center={[kab.lat, kab.lng]}
@@ -146,7 +146,7 @@ export default function HeatmapPeta({ period }) {
                   </div>
                 </Tooltip>
               </CircleMarker>
-            </div>
+            </Fragment>
           ))}
         </MapContainer>
 

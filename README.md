@@ -14,14 +14,14 @@
   ![PostgreSQL](https://img.shields.io/badge/PostgreSQL-Supabase-4169E1?style=flat&logo=postgresql&logoColor=white)
   ![FastAPI](https://img.shields.io/badge/FastAPI-ML_Service-009688?style=flat&logo=fastapi&logoColor=white)
   ![Vercel](https://img.shields.io/badge/Frontend-Vercel-000000?style=flat&logo=vercel&logoColor=white)
-  ![Railway](https://img.shields.io/badge/Backend-Railway-0B0D0E?style=flat&logo=railway&logoColor=white)
+  ![Vercel Backend](https://img.shields.io/badge/Backend-Vercel-000000?style=flat&logo=vercel&logoColor=white)
 
   <br/>
 
   **🌐 Live Demo:** [aduin.vercel.app](https://aduin.vercel.app)  
   **📋 Form Lapor:** [aduin.vercel.app/lapor](https://aduin.vercel.app/lapor)  
   **🔍 Cek Status:** [aduin.vercel.app/cek-status](https://aduin.vercel.app/cek-status)  
-  **🔗 API:** [aduin-production.up.railway.app/api/health](https://aduin-production.up.railway.app/api/health)
+  **🔗 API:** [aduin-api.vercel.app/api/health](https://aduin-api.vercel.app/api/health)
 
 </div>
 
@@ -103,9 +103,9 @@
                          │ REST API
                          ▼
 ┌─────────────────────────────────────────────────────────────────┐
-│                    BACKEND (Railway)                            │
+│                    BACKEND (Vercel)                             │
 │               Express.js 5 + Prisma ORM 5.22                   │
-│           aduin-production.up.railway.app                       │
+│           aduin-api.vercel.app                       │
 │                                                                 │
 │   ┌─────────────┐ ┌──────────────┐ ┌────────────────────────┐  │
 │   │ Auth Routes │ │Report Routes │ │   Dashboard Routes     │  │
@@ -146,7 +146,7 @@
 | **ML Urgensi** | FastAPI + Docker | Scoring urgensi |
 | **DS Dashboard** | Streamlit | Analitik dataset |
 | **Deploy FE** | Vercel | Hosting frontend |
-| **Deploy BE** | Railway | Hosting backend |
+| **Deploy BE** | Vercel | Hosting backend |
 | **Deploy DB** | Supabase | Managed PostgreSQL |
 
 ---
@@ -171,7 +171,7 @@ aduin-repo/
 │   ├── vercel.json
 │   └── package.json
 │
-├── backend/                         # Express.js + Prisma (Railway)
+├── backend/                         # Express.js + Prisma (Vercel)
 │   ├── src/
 │   │   ├── config/database.js       # Prisma singleton
 │   │   ├── controllers/             # Business logic
@@ -180,7 +180,6 @@ aduin-repo/
 │   ├── prisma/schema.prisma         # Database schema
 │   ├── seed.js                      # Seed users + wilayah dasar
 │   ├── seedWilayah.js               # Seed 9 kab/kota Bali + kecamatan (sebagai data awal)
-│   ├── seedLaporan.js               # Seed 30 laporan sample
 │   ├── server.js
 │   └── package.json
 │
@@ -254,7 +253,6 @@ npx prisma db push
 npx prisma generate
 node seed.js
 node seedWilayah.js
-node seedLaporan.js
 ```
 
 Jalankan backend:
@@ -384,7 +382,7 @@ Menentukan tingkat urgensi laporan: Rendah, Sedang, atau Tinggi menggunakan Fast
 | Service | Platform | URL |
 |---|---|---|
 | Frontend | Vercel | https://aduin.vercel.app |
-| Backend | Railway | https://aduin-production.up.railway.app |
+| Backend | Vercel | https://aduin-api.vercel.app |
 | Database | Supabase | aws-ap-southeast-1 |
 | ML Kategori | Railway | keluhan-multilabel-classification-api-production.up.railway.app |
 | ML Urgensi | Hugging Face | destiys-urgensi-keluhan-api.hf.space |

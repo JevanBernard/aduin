@@ -1,6 +1,8 @@
 const express = require("express");
 const router = express.Router();
 const auth = require("../middleware/auth");
+const { requireRole } = auth;
+const canEdit = requireRole("SUPER_ADMIN", "ADMIN");
 const prisma = require("../config/database");
 
 // GET public — untuk form warga (HARUS di atas /:id)
@@ -20,10 +22,10 @@ router.get("/", auth, async (req, res, next) => {
 });
 
 // POST tambah wilayah baru
-router.post("/", auth, async (req, res, next) => {
+router.post("/", auth, canEdit, async (req, res, next) => {
   try {
     const { nama, latitude, longitude, kecamatan = [] } = req.body;
-    if (!nama || !latitude || !longitude) {
+    if (!nama || latitude == null || latitude === "" || longitude == null || longitude === "") {
       return res.status(400).json({ success: false, message: "nama, latitude, longitude wajib diisi" });
     }
     const data = await prisma.wilayah.create({
@@ -39,15 +41,15 @@ router.post("/", auth, async (req, res, next) => {
 });
 
 // PUT update wilayah
-router.put("/:id", auth, async (req, res, next) => {
+router.put("/:id", auth, canEdit, async (req, res, next) => {
   try {
     const { nama, latitude, longitude, kecamatan } = req.body;
     const data = await prisma.wilayah.update({
       where: { id: req.params.id },
       data: {
         ...(nama && { nama }),
-        ...(latitude && { latitude: parseFloat(latitude) }),
-        ...(longitude && { longitude: parseFloat(longitude) }),
+        ...(latitude != null && latitude !== "" && { latitude: parseFloat(latitude) }),
+        ...(longitude != null && longitude !== "" && { longitude: parseFloat(longitude) }),
         ...(kecamatan !== undefined && { kecamatan }), // ← fix: !== undefined bukan &&
       },
     });
@@ -56,7 +58,7 @@ router.put("/:id", auth, async (req, res, next) => {
 });
 
 // DELETE wilayah
-router.delete("/:id", auth, async (req, res, next) => {
+router.delete("/:id", auth, canEdit, async (req, res, next) => {
   try {
     await prisma.wilayah.delete({ where: { id: req.params.id } });
     res.json({ success: true, message: "Wilayah dihapus" });

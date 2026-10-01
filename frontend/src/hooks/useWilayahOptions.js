@@ -1,6 +1,6 @@
 import { useState, useEffect } from "react";
 
-const API_URL = import.meta.env.VITE_API_URL || "https://aduin-production.up.railway.app/api";
+import { API_URL } from "../utils/apiUrl";
 
 export function useWilayahOptions() {
   const [wilayahOptions, setWilayahOptions] = useState([

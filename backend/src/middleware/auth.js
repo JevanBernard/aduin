@@ -17,4 +17,15 @@ function authMiddleware(req, res, next) {
   }
 }
 
+// Batasi akses berdasarkan role; dipasang setelah authMiddleware
+function requireRole(...roles) {
+  return (req, res, next) => {
+    if (!req.user || !roles.includes(req.user.role)) {
+      return res.status(403).json({ success: false, message: "Anda tidak memiliki akses untuk aksi ini" });
+    }
+    next();
+  };
+}
+
 module.exports = authMiddleware;
+module.exports.requireRole = requireRole;
